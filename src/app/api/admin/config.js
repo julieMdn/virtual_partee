@@ -1,6 +1,6 @@
 import AdminJS from "adminjs";
 import { Database, Resource } from "@adminjs/prisma";
-import { prisma } from "@/lib/prisma"; // Ajustez le chemin selon votre configuration
+import { prisma } from "@/lib/prisma";
 
 AdminJS.registerAdapter({ Database, Resource });
 
