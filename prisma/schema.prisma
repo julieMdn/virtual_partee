@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  user_id Int @id @default(autoincrement())
+  user_name String @unique
+  user_email String @unique
+  user_password String
+  user_firstname String
+  user_lastname String
+  user_created_at DateTime @default(now())
+  user_role String @default("user")
+  user_birthday DateTime
+  addresses Address[]
+  scores Score[]
+  bookings Booking[]
+}
+
+model Address{
+  address_id Int @id @default(autoincrement())
+  address_street String
+  address_city String
+  address_post_code String
+  address_country String
+  phone_number String
+  address_type String @default("billing")
+  users User[]
+}
+
+model Offer {
+  offer_id Int @id @default(autoincrement())
+  offer_title String
+  offer_description String
+  offer_price Float
+  offer_picture String
+  offer_duration Int
+  offer_created_at DateTime @default(now()) 
+  bookings Booking[]
+}
+
+model TimeSlot{
+  time_slot_id Int @id @default(autoincrement())
+  start_time DateTime
+  end_time DateTime
+  is_available Boolean @default(true)
+  day_of_week String
+  max_capacity Int
+  booking Booking?
+}
+
+model Booking{
+  booking_id Int @id @default(autoincrement())
+  booking_date DateTime @default(now())
+  booking_status String @default("pending")
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int
+  @@index([user_id])
+  offer Offer @relation(fields: [offer_id], references: [offer_id], onDelete: Cascade)
+  offer_id Int
+  @@index([offer_id])
+  time_slot TimeSlot @relation(fields: [time_slot_id], references: [time_slot_id], onDelete: Cascade)
+  time_slot_id Int @unique
+  @@index([time_slot_id])
+  payment Payment? @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)  
+  payment_id Int?
+  @@index([payment_id])
+}
+
+model Payment{
+  payment_id Int @id @default(autoincrement())
+  payment_date DateTime @default(now())
+  payment_amount Float
+  tva_amount Float
+  payment_status String @default("pending")
+  bookings Booking[]
+  @@index([payment_id])
+}
+
+model Score{
+  score_id Int @id @default(autoincrement())
+  score_value Int
+  score_date DateTime @default(now())
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int
+  course Course @relation(fields: [course_id], references: [course_id], onDelete: Cascade)
+  course_id Int
+  @@index([user_id])
+  @@index([course_id])
+}
+
+model Course{
+  course_id Int @id @default(autoincrement())
+  course_title String
+  scores Score[]
+}
+
+
