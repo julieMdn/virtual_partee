@@ -11,29 +11,29 @@ export default function AdminPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
     try {
-      const response = await fetch("/api/admin/login", {
+      const response = await fetch("/admin/api/login", {
+        // Mise à jour du chemin
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: email, // Assurez-vous que ces variables
+          password: password, // sont bien définies
+        }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
+        const data = await response.json();
         router.push("/admin/dashboard");
       } else {
-        setError(data.error || "Une erreur est survenue");
+        const error = await response.json();
+        setError(error.error || "Erreur de connexion");
       }
-    } catch (err) {
-      setError("Une erreur est survenue lors de la connexion");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Erreur:", error);
+      setError("Une erreur est survenue");
     }
   };
 

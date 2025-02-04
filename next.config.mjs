@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    serverActions: {
+      bodySizeLimit: "2mb", // ou la limite que vous souhaitez
+    },
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

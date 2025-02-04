@@ -15,7 +15,7 @@ export default function AdminDashboard() {
     // Vérifier si l'admin est connecté
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/admin/verify");
+        const response = await fetch("/admin/api/verify");
         if (!response.ok) {
           router.push("/admin");
         }
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                    <CalendarIcon className="h-6 w-6 text-white" />
+                    <CalendarIcon className="h-6s w-6 text-white" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
