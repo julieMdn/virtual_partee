@@ -18,7 +18,7 @@ const resources = [
 export const adminJs = new AdminJS({
   databases: [prisma],
   resources: resources,
-  rootPath: "/admin",
+  rootPath: "/api/adminjs",
   dashboard: {
     component: AdminJS.bundle("./components/dashboard"),
   },
