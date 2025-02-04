@@ -4,27 +4,6 @@ import { prisma } from "@/lib/prisma";
 
 AdminJS.registerAdapter({ Database, Resource });
 
-// Fonction de vérification d'admin
-export const verifyAdmin = async (email, password) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        user_email: email,
-        user_role: "admin",
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  } catch (error) {
-    console.error("Erreur de vérification admin:", error);
-    return null;
-  }
-};
-
 const resources = [
   { resource: { model: prisma.user, client: prisma }, options: {} },
   { resource: { model: prisma.address, client: prisma }, options: {} },
@@ -39,10 +18,7 @@ const resources = [
 export const adminJs = new AdminJS({
   databases: [prisma],
   resources: resources,
-  rootPath: "/api/adminjs",
-  dashboard: {
-    component: AdminJS.bundle("./components/dashboard"),
-  },
+  rootPath: "/admin",
   branding: {
     companyName: "Virtual Partee",
     logo: false,
