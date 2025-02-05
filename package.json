@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6",
     "next": "15.1.6",
     "ra-data-json-server": "^5.5.3",
     "ra-data-simple-rest": "^5.5.3",
