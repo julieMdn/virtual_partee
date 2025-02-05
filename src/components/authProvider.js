@@ -4,15 +4,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const authProvider = {
-  // Appelé quand l'utilisateur tente de se connecter
+  // Appelé lors de la connexion
   login: async ({ username, password }) => {
     try {
       const response = await fetch("/api/admin/auth/login", {
         method: "POST",
         body: JSON.stringify({ username, password }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) {
@@ -22,13 +20,12 @@ const authProvider = {
       const user = await response.json();
       localStorage.setItem("auth", JSON.stringify(user));
       return Promise.resolve();
-    } catch (error) {
-      console.error("Erreur de connexion:", error);
+    } catch {
       return Promise.reject("Invalid credentials");
     }
   },
 
-  // Appelé quand l'utilisateur clique sur le bouton de déconnexion
+  // Appelé lors de la déconnexion
   logout: () => {
     localStorage.removeItem("auth");
     return Promise.resolve();
@@ -43,49 +40,24 @@ const authProvider = {
     return Promise.resolve();
   },
 
-  // Appelé quand l'utilisateur navigue dans l'application
+  // Appelé quand l'utilisateur navigue
   checkAuth: () => {
     return localStorage.getItem("auth") ? Promise.resolve() : Promise.reject();
+  },
+
+  // Appelé pour obtenir l'identité de l'utilisateur
+  getIdentity: () => {
+    const auth = localStorage.getItem("auth");
+    if (!auth) return Promise.reject();
+
+    const { fullName } = JSON.parse(auth);
+    return Promise.resolve({ id: "user", fullName });
   },
 
   // Appelé pour obtenir les permissions de l'utilisateur
   getPermissions: () => {
     const auth = localStorage.getItem("auth");
     if (!auth) return Promise.reject();
-
-    const { role } = JSON.parse(auth);
-    return Promise.resolve(role);
-  },
-
-  // Appelé quand l'application a besoin d'afficher les informations de l'utilisateur
-  getIdentity: () => {
-    const auth = localStorage.getItem("auth");
-    if (!auth) return Promise.reject();
-
-    const { id, fullName } = JSON.parse(auth);
-    return Promise.resolve({ id, fullName });
-  },
-
-  // Appelé pour vérifier si l'utilisateur peut accéder à une ressource
-  canAccess: async ({ resource, action }) => {
-    const auth = localStorage.getItem("auth");
-    if (!auth) {
-      return Promise.reject();
-    }
-    const { user } = JSON.parse(auth);
-
-    // Exemple de vérification des permissions
-    if (user.role === "ADMIN") {
-      return Promise.resolve(); // Les admins ont accès à tout
-    }
-
-    // Ajouter ici votre logique de permissions
-    return Promise.reject();
-  },
-
-  // Appelé après une redirection OAuth
-  handleCallback: async () => {
-    // À implémenter si vous utilisez OAuth
     return Promise.resolve();
   },
 };

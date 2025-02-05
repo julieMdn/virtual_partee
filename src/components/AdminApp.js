@@ -1,83 +1,30 @@
 "use client";
 import { Admin, Resource, ListGuesser, EditGuesser } from "react-admin";
-import jsonServerProvider from "ra-data-json-server";
 import authProvider from "./authProvider";
 
+// Dashboard simple
+const MyDashboard = () => {
+  return (
+    <div>
+      <h1>Bienvenue dans l'administration</h1>
+      <p>Sélectionnez une ressource dans le menu</p>
+    </div>
+  );
+};
+
+// DataProvider minimal sans requêtes asynchrones
 const dataProvider = {
-  getList: async (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
-
-    try {
-      const response = await fetch(
-        `/api/admin/${resource}?${new URLSearchParams({
-          page: page.toString(),
-          perPage: perPage.toString(),
-          sortField: field,
-          sortOrder: order,
-          filter: JSON.stringify(params.filter),
-        })}`
-      );
-
-      const json = await response.json();
-
-      return {
-        data: json.data,
-        total: json.total,
-      };
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  },
-
-  getOne: async (resource, params) => {
-    const response = await fetch(`/api/admin/${resource}/${params.id}`);
-    const json = await response.json();
-    return { data: json };
-  },
-
-  create: async (resource, params) => {
-    const response = await fetch(`/api/admin/${resource}`, {
-      method: "POST",
-      body: JSON.stringify(params.data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await response.json();
-    return { data: json };
-  },
-
-  update: async (resource, params) => {
-    const response = await fetch(`/api/admin/${resource}/${params.id}`, {
-      method: "PUT",
-      body: JSON.stringify(params.data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await response.json();
-    return { data: json };
-  },
-
-  delete: async (resource, params) => {
-    await fetch(`/api/admin/${resource}/${params.id}`, {
-      method: "DELETE",
-    });
-    return { data: params.previousData };
-  },
-
-  deleteMany: async (resource, params) => {
-    const response = await fetch(`/api/admin/${resource}/bulk-delete`, {
-      method: "POST",
-      body: JSON.stringify({ ids: params.ids }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return { data: [] };
-  },
+  getList: (resource, params) => Promise.resolve({ data: [], total: 0 }),
+  getOne: (resource, params) => Promise.resolve({ data: {} }),
+  getMany: (resource, params) => Promise.resolve({ data: [] }),
+  getManyReference: (resource, params) =>
+    Promise.resolve({ data: [], total: 0 }),
+  create: (resource, params) =>
+    Promise.resolve({ data: { ...params.data, id: 1 } }),
+  update: (resource, params) => Promise.resolve({ data: params.data }),
+  updateMany: (resource, params) => Promise.resolve({ data: params.ids }),
+  delete: (resource, params) => Promise.resolve({ data: params.previousData }),
+  deleteMany: (resource, params) => Promise.resolve({ data: params.ids }),
 };
 
 const AdminApp = () => {
@@ -85,8 +32,8 @@ const AdminApp = () => {
     <Admin
       dataProvider={dataProvider}
       authProvider={authProvider}
-      requireAuth
-      title="Administration"
+      dashboard={MyDashboard}
+      disableTelemetry
     >
       <Resource
         name="users"
@@ -105,12 +52,6 @@ const AdminApp = () => {
         list={ListGuesser}
         edit={EditGuesser}
         options={{ label: "Offres" }}
-      />
-      <Resource
-        name="timeslots"
-        list={ListGuesser}
-        edit={EditGuesser}
-        options={{ label: "Créneaux" }}
       />
       <Resource
         name="bookings"
