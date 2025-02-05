@@ -5,8 +5,27 @@ const prisma = new PrismaClient();
 
 // GET /api/admin/users
 export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
   try {
-    const { searchParams } = new URL(request.url);
+    // Si un ID est fourni, retourner un utilisateur spécifique
+    if (id) {
+      const user = await prisma.user.findUnique({
+        where: {
+          user_id: parseInt(id),
+        },
+      });
+
+      if (!user) {
+        return NextResponse.json(
+          { message: "Utilisateur non trouvé" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(user);
+    }
 
     // React Admin envoie les paramètres dans ce format
     const sort = JSON.parse(searchParams.get("sort") || '["id","ASC"]');
@@ -48,11 +67,8 @@ export async function GET(request) {
       }
     );
   } catch (error) {
-    console.error("GET Users Error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+    console.error("Erreur:", error);
+    return NextResponse.json({ message: "Erreur serveur" }, { status: 500 });
   }
 }
 
@@ -89,31 +105,31 @@ export async function POST(request) {
 // PUT /api/admin/users/[id]
 export async function PUT(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
     const data = await request.json();
-    const { id, ...updateData } = data;
 
-    const user = await prisma.user.update({
-      where: { user_id: parseInt(id) },
+    if (!id) {
+      return NextResponse.json({ message: "ID manquant" }, { status: 400 });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        user_id: parseInt(id),
+      },
       data: {
-        user_name: updateData.user_name,
-        user_email: updateData.user_email,
-        user_firstname: updateData.user_firstname,
-        user_lastname: updateData.user_lastname,
-        user_role: updateData.user_role,
-        user_birthday: updateData.user_birthday
-          ? new Date(updateData.user_birthday)
-          : null,
+        user_name: data.user_name,
+        user_email: data.user_email,
+        user_firstname: data.user_firstname,
+        user_lastname: data.user_lastname,
+        user_role: data.user_role,
       },
     });
 
-    // React Admin attend l'objet mis à jour en réponse
-    return NextResponse.json(user);
+    return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error("PUT User Error:", error);
-    return NextResponse.json(
-      { error: "Failed to update user" },
-      { status: 500 }
-    );
+    console.error("Erreur lors de la mise à jour:", error);
+    return NextResponse.json({ message: "Erreur serveur" }, { status: 500 });
   }
 }
 

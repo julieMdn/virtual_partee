@@ -8,6 +8,7 @@ import {
 } from "react-admin";
 import simpleRestProvider from "ra-data-simple-rest";
 import { UserList } from "./resources/users/UserList";
+import { UserEdit } from "./resources/users/UserEdit";
 import authProvider from "./authProvider";
 
 // Composant Dashboard
@@ -55,9 +56,69 @@ const customDataProvider = {
   },
 
   getOne: async (resource, { id }) => {
-    const response = await fetch(`/api/admin/${resource}/${id}`);
+    console.log("Récupération de:", resource, "avec id:", id);
+    const url = new URL(`${window.location.origin}/api/admin/${resource}`);
+    url.searchParams.append("id", id);
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const json = await response.json();
-    return { data: json };
+    return {
+      data: {
+        id: json.user_id,
+        ...json,
+      },
+    };
+  },
+
+  update: async (resource, { id, data }) => {
+    console.log("Mise à jour de:", resource, "avec id:", id, "données:", data);
+    const response = await fetch(`/api/admin/${resource}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const updatedData = await response.json();
+    return {
+      data: {
+        id: updatedData.user_id,
+        ...updatedData,
+      },
+    };
+  },
+
+  delete: async (resource, { id }) => {
+    console.log("Suppression de:", resource, "avec id:", id);
+    const response = await fetch(`/api/admin/${resource}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return { data: { id } };
+  },
+
+  deleteMany: async (resource, { ids }) => {
+    console.log("Suppression multiple:", resource, "avec ids:", ids);
+    await Promise.all(
+      ids.map((id) =>
+        fetch(`/api/admin/${resource}/${id}`, {
+          method: "DELETE",
+        })
+      )
+    );
+    return { data: ids };
   },
 };
 
@@ -73,6 +134,7 @@ const AdminApp = () => {
       <Resource
         name="users"
         list={UserList}
+        edit={UserEdit}
         options={{ label: "Utilisateurs" }}
       />
     </Admin>

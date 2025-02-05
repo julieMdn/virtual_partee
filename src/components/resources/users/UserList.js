@@ -1,4 +1,11 @@
-import { List, Datagrid, TextField, EmailField, DateField } from "react-admin";
+import {
+  List,
+  Datagrid,
+  TextField,
+  EmailField,
+  DateField,
+  DeleteButton,
+} from "react-admin";
 
 export const UserList = () => {
   console.log("Rendu de UserList - Début");
@@ -13,6 +20,7 @@ export const UserList = () => {
         <TextField source="user_lastname" label="Nom" />
         <TextField source="user_role" label="Rôle" />
         <DateField source="user_created_at" label="Date de création" />
+        <DeleteButton />
       </Datagrid>
     </List>
   );
