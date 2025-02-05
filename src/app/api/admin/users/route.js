@@ -9,11 +9,16 @@ export async function GET(request) {
   const id = searchParams.get("id");
 
   try {
-    // Si un ID est fourni, retourner un utilisateur spécifique
+    // Si un ID est fourni, retourner un utilisateur spécifique avec ses relations
     if (id) {
       const user = await prisma.user.findUnique({
         where: {
           user_id: parseInt(id),
+        },
+        include: {
+          addresses: true,
+          scores: true,
+          bookings: true,
         },
       });
 
@@ -35,7 +40,7 @@ export async function GET(request) {
     // Convertit 'id' en 'user_id' pour le tri
     const sortField = sort[0] === "id" ? "user_id" : sort[0];
 
-    // Construit la requête Prisma
+    // Construit la requête Prisma avec les relations
     const users = await prisma.user.findMany({
       skip: range[0],
       take: range[1] - range[0] + 1,
@@ -43,6 +48,11 @@ export async function GET(request) {
         [sortField]: sort[1].toLowerCase(),
       },
       where: filter,
+      include: {
+        addresses: true,
+        scores: true,
+        bookings: true,
+      },
     });
 
     // Compte total pour la pagination
@@ -54,7 +64,6 @@ export async function GET(request) {
       ...user,
     }));
 
-    // Format de réponse exact de React Admin
     return NextResponse.json(
       {
         data: transformedUsers,
@@ -77,6 +86,7 @@ export async function POST(request) {
   try {
     const data = await request.json();
 
+    // Création de l'utilisateur avec ses relations
     const user = await prisma.user.create({
       data: {
         user_name: data.user_name,
@@ -86,10 +96,27 @@ export async function POST(request) {
         user_lastname: data.user_lastname,
         user_role: data.user_role || "USER",
         user_birthday: data.user_birthday ? new Date(data.user_birthday) : null,
+        // Création des adresses associées
+        addresses: {
+          create: data.addresses || [],
+        },
+        // Création des scores associés
+        scores: {
+          create: data.scores || [],
+        },
+        // Création des réservations associées
+        bookings: {
+          create: data.bookings || [],
+        },
+      },
+      // Inclure les relations dans la réponse
+      include: {
+        addresses: true,
+        scores: true,
+        bookings: true,
       },
     });
 
-    // Transforme la réponse pour React Admin
     return NextResponse.json({
       data: { id: user.user_id, ...user },
     });
@@ -113,6 +140,7 @@ export async function PUT(request) {
       return NextResponse.json({ message: "ID manquant" }, { status: 400 });
     }
 
+    // Mise à jour de l'utilisateur et de ses relations
     const updatedUser = await prisma.user.update({
       where: {
         user_id: parseInt(id),
@@ -123,6 +151,41 @@ export async function PUT(request) {
         user_firstname: data.user_firstname,
         user_lastname: data.user_lastname,
         user_role: data.user_role,
+        user_birthday: data.user_birthday
+          ? new Date(data.user_birthday)
+          : undefined,
+        // Mise à jour des adresses
+        addresses: {
+          upsert:
+            data.addresses?.map((address) => ({
+              where: { address_id: address.address_id || 0 },
+              update: address,
+              create: address,
+            })) || [],
+        },
+        // Mise à jour des scores
+        scores: {
+          upsert:
+            data.scores?.map((score) => ({
+              where: { score_id: score.score_id || 0 },
+              update: score,
+              create: score,
+            })) || [],
+        },
+        // Mise à jour des réservations
+        bookings: {
+          upsert:
+            data.bookings?.map((booking) => ({
+              where: { booking_id: booking.booking_id || 0 },
+              update: booking,
+              create: booking,
+            })) || [],
+        },
+      },
+      include: {
+        addresses: true,
+        scores: true,
+        bookings: true,
       },
     });
 
@@ -139,11 +202,16 @@ export async function DELETE(request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
+    // Suppression de l'utilisateur (les relations seront supprimées automatiquement si onDelete: CASCADE est configuré)
     const user = await prisma.user.delete({
       where: { user_id: parseInt(id) },
+      include: {
+        addresses: true,
+        scores: true,
+        bookings: true,
+      },
     });
 
-    // React Admin attend l'objet supprimé en réponse
     return NextResponse.json(user);
   } catch (error) {
     console.error("DELETE User Error:", error);
