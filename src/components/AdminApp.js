@@ -58,7 +58,7 @@ const UserList = () => (
       <TextField source="firstName" label="Prénom" />
       <TextField source="lastName" label="Nom" />
       <DateField
-        source="user_birthday"
+        source="birthday"
         locales="fr-FR"
         options={{ year: "numeric", month: "long", day: "numeric" }}
       />
