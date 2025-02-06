@@ -7,6 +7,14 @@ import {
   EditGuesser,
   Layout,
   AppBar,
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  ReferenceField,
+  ReferenceArrayField,
+  SingleFieldList,
+  ChipField,
 } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
@@ -14,12 +22,15 @@ import frenchMessages from "ra-language-french";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import { Box, Typography } from "@mui/material";
 import authProvider from "./authProvider";
+import LanguageIcon from "@mui/icons-material/Language";
 
 const adminDataProvider = dataProvider("/api");
 
 const i18nProvider = polyglotI18nProvider((locale) => {
   if (locale === "fr") {
-    return frenchMessages;
+    return {
+      ...frenchMessages,
+    };
   }
   return {};
 }, "fr");
@@ -34,8 +45,25 @@ const MyAppBar = () => (
         { locale: "en", name: "English" },
         { locale: "fr", name: "Français" },
       ]}
+      icon={<LanguageIcon />}
     />
   </AppBar>
+);
+
+const UserList = () => (
+  <List>
+    <Datagrid>
+      <TextField source="username" label="Nom d'utilisateur" />
+      <TextField source="email" label="Adresse e-mail" />
+      <TextField source="firstName" label="Prénom" />
+      <TextField source="lastName" label="Nom" />
+      <DateField
+        source="user_birthday"
+        locales="fr-FR"
+        options={{ year: "numeric", month: "long", day: "numeric" }}
+      />
+    </Datagrid>
+  </List>
 );
 
 const AdminApp = () => {
@@ -48,7 +76,7 @@ const AdminApp = () => {
     >
       <Resource
         name="User"
-        list={ListGuesser}
+        list={UserList}
         edit={EditGuesser}
         recordRepresentation="user_name"
       />
