@@ -13,6 +13,7 @@ import { LocalesMenuButton } from "react-admin";
 import frenchMessages from "ra-language-french";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import { Box, Typography } from "@mui/material";
+import authProvider from "./authProvider";
 
 const adminDataProvider = dataProvider("/api");
 
@@ -42,6 +43,7 @@ const AdminApp = () => {
     <Admin
       dataProvider={adminDataProvider}
       i18nProvider={i18nProvider}
+      authProvider={authProvider}
       layout={(props) => <Layout {...props} appBar={MyAppBar} />}
     >
       <Resource
