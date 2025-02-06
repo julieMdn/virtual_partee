@@ -12,6 +12,7 @@ import {
   NumberField,
   SimpleList,
   useRecordContext,
+  Labeled,
 } from "react-admin";
 import { useMediaQuery } from "@mui/material";
 
@@ -114,53 +115,29 @@ export const UserList = () => {
 
 const AddressDetails = () => {
   const record = useRecordContext();
-  console.log("Données de l'adresse individuelle:", record);
+  if (!record) return null;
 
   return (
     <div className="p-4 m-2 bg-white rounded-md shadow-sm border border-gray-200">
       <div className="grid gap-2">
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Rue :</span>
-          <ChipField
-            source="address_street"
-            className="bg-blue-50 text-blue-700"
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Ville :</span>
-          <ChipField
-            source="address_city"
-            className="bg-blue-50 text-blue-700"
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Code Postal :</span>
-          <TextField
-            source="address_post_code"
-            className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full"
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Pays :</span>
-          <ChipField
-            source="address_country"
-            className="bg-blue-50 text-blue-700"
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Type :</span>
-          <ChipField
-            source="address_type"
-            className="bg-blue-50 text-blue-700"
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-gray-600 w-24">Téléphone :</span>
-          <ChipField
-            source="phone_number"
-            className="bg-blue-50 text-blue-700"
-          />
-        </div>
+        <Labeled label="Rue">
+          <TextField source="address_street" />
+        </Labeled>
+        <Labeled label="Ville">
+          <TextField source="address_city" />
+        </Labeled>
+        <Labeled label="Code Postal">
+          <TextField source="address_post_code" />
+        </Labeled>
+        <Labeled label="Pays">
+          <TextField source="address_country" />
+        </Labeled>
+        <Labeled label="Type">
+          <TextField source="address_type" />
+        </Labeled>
+        <Labeled label="Téléphone">
+          <TextField source="phone_number" />
+        </Labeled>
       </div>
     </div>
   );
@@ -168,7 +145,7 @@ const AddressDetails = () => {
 
 const UserExpanded = () => {
   const record = useRecordContext();
-  console.log("Données complètes:", record);
+  if (!record) return null;
 
   return (
     <div className="m-4 p-4 bg-gray-50 rounded-lg">
@@ -193,7 +170,6 @@ const UserExpanded = () => {
                 <NumberField
                   source="score_value"
                   options={{ maximumFractionDigits: 2 }}
-                  className="text-gray-800"
                 />
               </SingleFieldList>
             </ArrayField>
@@ -207,10 +183,7 @@ const UserExpanded = () => {
           <div className="p-4 bg-white rounded-md shadow-sm border border-gray-200">
             <ArrayField source="bookings">
               <SingleFieldList>
-                <ChipField
-                  source="booking_date"
-                  className="bg-green-50 text-green-700"
-                />
+                <ChipField source="booking_date" />
               </SingleFieldList>
             </ArrayField>
           </div>

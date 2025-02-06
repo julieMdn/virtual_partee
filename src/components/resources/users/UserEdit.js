@@ -7,7 +7,7 @@ export const UserEdit = () => (
       <TextInput
         source="user_email"
         label="Email"
-        type="email"
+        type="email" // Spécifie que c'est un champ email
         validate={(email) => {
           if (!email) return "L'email est requis";
           if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {

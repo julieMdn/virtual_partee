@@ -13,13 +13,7 @@ import authProvider from "./authProvider";
 
 // Composant Dashboard
 const Dashboard = () => (
-  <div
-    style={{
-      padding: "20px",
-      maxWidth: "800px",
-      margin: "0 auto",
-    }}
-  >
+  <div className="p-5 max-w-3xl mx-auto">
     <h1>Tableau de bord d'administration</h1>
     <p>Bienvenue dans l'interface d'administration.</p>
     <p>
