@@ -2,8 +2,10 @@
 // /app/api/[resource]/route.ts <= catch all resource requests
 
 import { defaultHandler } from "ra-data-simple-prisma";
-import { prismaClient } from "../prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+const prismaClient = new PrismaClient();
 
 const handler = async (req) => {
   const body = await req.json();

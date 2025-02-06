@@ -1,13 +1,49 @@
 "use client";
 
-import { Admin, Resource, ListGuesser, EditGuesser } from "react-admin";
+import {
+  Admin,
+  Resource,
+  ListGuesser,
+  EditGuesser,
+  Layout,
+  AppBar,
+} from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
+import { LocalesMenuButton } from "react-admin";
+import frenchMessages from "ra-language-french";
+import polyglotI18nProvider from "ra-i18n-polyglot";
+import { Box, Typography } from "@mui/material";
 
 const adminDataProvider = dataProvider("/api");
 
+const i18nProvider = polyglotI18nProvider((locale) => {
+  if (locale === "fr") {
+    return frenchMessages;
+  }
+  return {};
+}, "fr");
+
+const MyAppBar = () => (
+  <AppBar>
+    <Box flex="1">
+      <Typography variant="h6" id="react-admin-title"></Typography>
+    </Box>
+    <LocalesMenuButton
+      languages={[
+        { locale: "en", name: "English" },
+        { locale: "fr", name: "Français" },
+      ]}
+    />
+  </AppBar>
+);
+
 const AdminApp = () => {
   return (
-    <Admin dataProvider={adminDataProvider}>
+    <Admin
+      dataProvider={adminDataProvider}
+      i18nProvider={i18nProvider}
+      layout={(props) => <Layout {...props} appBar={MyAppBar} />}
+    >
       <Resource
         name="User"
         list={ListGuesser}
