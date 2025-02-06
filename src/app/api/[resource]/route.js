@@ -1,5 +1,4 @@
-// -- Example for Next App router --
-// /app/api/[resource]/route.ts <= catch all resource requests
+// dataprovider <-> prisma
 
 import { defaultHandler } from "ra-data-simple-prisma";
 import { PrismaClient } from "@prisma/client";
