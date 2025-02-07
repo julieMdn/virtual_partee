@@ -51,13 +51,11 @@ model Offer {
 }
 
 model TimeSlot {
-  id Int @id @default(autoincrement()) @map("time_slot_id")
-  startTime DateTime @map("start_time")
-  endTime DateTime @map("end_time")
-  isAvailable Boolean @default(true) @map("is_available")
-  dayOfWeek String @map("day_of_week")
-  maxCapacity Int @map("max_capacity")
-  booking Booking?
+  id          Int      @id @default(autoincrement()) @map("time_slot_id")
+  startTime   DateTime @db.Time @map("start_time")
+  endTime     DateTime @db.Time @map("end_time")
+  isAvailable Boolean  @default(true) @map("is_available")
+  booking     Booking?
 }
 
 model Booking {
