@@ -29,7 +29,8 @@ import polyglotI18nProvider from "ra-i18n-polyglot";
 import { Box, Typography } from "@mui/material";
 import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
-
+import UserList from "./categories/users/UserList";
+import UserEdit from "./categories/users/UserEdit";
 const adminDataProvider = dataProvider("/api");
 
 const i18nProvider = polyglotI18nProvider((locale) => {
@@ -54,45 +55,6 @@ const MyAppBar = () => (
       icon={<LanguageIcon />}
     />
   </AppBar>
-);
-
-const UserList = () => (
-  <List>
-    <Datagrid>
-      <TextField source="email" label="e-mail" />
-      <TextField source="lastName" label="Nom" />
-      <TextField source="firstName" label="Prénom" />
-      <DateField
-        source="birthday"
-        locales="fr-FR"
-        options={{ year: "numeric", month: "long", day: "numeric" }}
-        label="Date de naissance"
-      />
-    </Datagrid>
-  </List>
-);
-
-const UserEdit = () => (
-  <Edit>
-    <SimpleForm>
-      <TextInput source="username" label="Nom d'utilisateur" />
-      <TextInput source="email" label="E-mail" />
-      <TextInput source="firstName" label="Prénom" />
-      <TextInput source="lastName" label="Nom" />
-      <DateInput source="birthday" label="Date de naissance" />
-      <ReferenceArrayInput
-        source="addresses"
-        reference="Address"
-        label="Adresses"
-      >
-        <AutocompleteArrayInput
-          optionText={(choice) =>
-            `${choice.street}, ${choice.city} ${choice.postCode} ${choice.country} - Tél: ${choice.phoneNumber} (${choice.type})`
-          }
-        />
-      </ReferenceArrayInput>
-    </SimpleForm>
-  </Edit>
 );
 
 const AdminApp = () => {

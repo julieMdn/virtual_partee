@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const AdminApp = dynamic(() => import("@/components/AdminApp"));
+const AdminApp = dynamic(() => import("@/components/admin/AdminApp"));
 
 const AdminPage = () => <AdminApp />;
 
