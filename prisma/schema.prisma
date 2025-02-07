@@ -104,4 +104,13 @@ model Course {
   scores Score[]
 }
 
+model OpeningHours {
+  id Int @id @default(autoincrement()) @map("opening_hours_id")
+  dayOfWeek String @map("day_of_week")
+  morningStart DateTime @db.Time @map("morning_start")
+  morningEnd DateTime @db.Time @map("morning_end")
+  afternoonStart DateTime @db.Time @map("afternoon_start")
+  afternoonEnd DateTime @db.Time @map("afternoon_end")
+}
+
 

@@ -7,20 +7,6 @@ import {
   EditGuesser,
   Layout,
   AppBar,
-  List,
-  Datagrid,
-  TextField,
-  DateField,
-  ReferenceField,
-  ReferenceArrayField,
-  SingleFieldList,
-  ChipField,
-  Edit,
-  SimpleForm,
-  TextInput,
-  DateInput,
-  ReferenceArrayInput,
-  AutocompleteArrayInput,
 } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
@@ -49,6 +35,7 @@ import CourseCreate from "./categories/courses/CourseCreate";
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
+
 const adminDataProvider = dataProvider("/api");
 
 const i18nProvider = polyglotI18nProvider((locale) => {
@@ -90,12 +77,6 @@ const AdminApp = () => {
         recordRepresentation="username"
       />
       <Resource
-        name="Address"
-        list={ListGuesser}
-        edit={EditGuesser}
-        recordRepresentation="address_street"
-      />
-      <Resource
         name="Offer"
         list={OfferList}
         edit={OfferEdit}
@@ -113,12 +94,6 @@ const AdminApp = () => {
         list={BookingList}
         edit={BookingEdit}
         create={BookingCreate}
-      />
-      <Resource
-        name="Payment"
-        list={PaymentList}
-        edit={PaymentEdit}
-        create={PaymentCreate}
       />
       <Resource
         name="Score"

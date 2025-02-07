@@ -10,16 +10,11 @@ const ScoreList = () => (
   <List>
     <Datagrid>
       <TextField source="value" label="Score" />
-      <DateField
-        source="date"
-        label="Date"
-        locales="fr-FR"
-        options={{ year: "numeric", month: "long", day: "numeric" }}
-      />
-      <ReferenceField source="userId" reference="users" label="Utilisateur">
+      <DateField source="date" label="Date" locales="fr-FR" showTime={false} />
+      <ReferenceField source="userId" reference="User" label="Utilisateur">
         <TextField source="username" />
       </ReferenceField>
-      <ReferenceField source="courseId" reference="courses" label="Cours">
+      <ReferenceField source="courseId" reference="Course" label="Cours">
         <TextField source="title" />
       </ReferenceField>
     </Datagrid>
