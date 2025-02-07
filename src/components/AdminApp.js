@@ -15,6 +15,12 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  ReferenceArrayInput,
+  AutocompleteArrayInput,
 } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
@@ -53,17 +59,40 @@ const MyAppBar = () => (
 const UserList = () => (
   <List>
     <Datagrid>
-      <TextField source="username" label="Nom d'utilisateur" />
-      <TextField source="email" label="Adresse e-mail" />
-      <TextField source="firstName" label="Prénom" />
+      <TextField source="email" label="e-mail" />
       <TextField source="lastName" label="Nom" />
+      <TextField source="firstName" label="Prénom" />
       <DateField
         source="birthday"
         locales="fr-FR"
         options={{ year: "numeric", month: "long", day: "numeric" }}
+        label="Date de naissance"
       />
     </Datagrid>
   </List>
+);
+
+const UserEdit = () => (
+  <Edit>
+    <SimpleForm>
+      <TextInput source="username" label="Nom d'utilisateur" />
+      <TextInput source="email" label="E-mail" />
+      <TextInput source="firstName" label="Prénom" />
+      <TextInput source="lastName" label="Nom" />
+      <DateInput source="birthday" label="Date de naissance" />
+      <ReferenceArrayInput
+        source="addresses"
+        reference="Address"
+        label="Adresses"
+      >
+        <AutocompleteArrayInput
+          optionText={(choice) =>
+            `${choice.street}, ${choice.city} ${choice.postCode} ${choice.country} - Tél: ${choice.phoneNumber} (${choice.type})`
+          }
+        />
+      </ReferenceArrayInput>
+    </SimpleForm>
+  </Edit>
 );
 
 const AdminApp = () => {
@@ -77,8 +106,8 @@ const AdminApp = () => {
       <Resource
         name="User"
         list={UserList}
-        edit={EditGuesser}
-        recordRepresentation="user_name"
+        edit={UserEdit}
+        recordRepresentation="username"
       />
       <Resource
         name="Address"
