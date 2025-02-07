@@ -23,15 +23,7 @@ const UserEdit = (props) => (
           );
           return (
             <>
-              <h3
-                style={{
-                  marginTop: "2rem",
-                  marginBottom: "1rem",
-                  color: "#666",
-                  borderBottom: "1px solid #ddd",
-                  paddingBottom: "0.5rem",
-                }}
-              >
+              <h3 className="mt-8 mb-4 text-gray-600 border-b border-gray-300 pb-2">
                 Adresse
               </h3>
               <TextInput
