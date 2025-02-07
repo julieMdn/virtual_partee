@@ -42,7 +42,7 @@ model Address {
 model Offer {
   id Int @id @default(autoincrement()) @map("offer_id")
   title String @map("offer_title")
-  description String @map("offer_description")
+  description String @db.MediumText @map("offer_description")
   price Float @map("offer_price")
   picture String @map("offer_picture")
   duration Int @map("offer_duration")

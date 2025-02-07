@@ -31,6 +31,24 @@ import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
+import TimeSlotList from "./categories/timeslots/TimeSlotList";
+import TimeSlotEdit from "./categories/timeslots/TimeSlotEdit";
+import TimeSlotCreate from "./categories/timeslots/TimeSlotCreate";
+import ScoreList from "./categories/scores/ScoreList";
+import ScoreEdit from "./categories/scores/ScoreEdit";
+import ScoreCreate from "./categories/scores/ScoreCreate";
+import PaymentList from "./categories/payments/PaymentList";
+import PaymentEdit from "./categories/payments/PaymentEdit";
+import PaymentCreate from "./categories/payments/PaymentCreate";
+import OfferList from "./categories/offers/OfferList";
+import OfferEdit from "./categories/offers/OfferEdit";
+import OfferCreate from "./categories/offers/OfferCreate";
+import CourseList from "./categories/courses/CourseList";
+import CourseEdit from "./categories/courses/CourseEdit";
+import CourseCreate from "./categories/courses/CourseCreate";
+import BookingList from "./categories/bookings/BookingList";
+import BookingEdit from "./categories/bookings/BookingEdit";
+import BookingCreate from "./categories/bookings/BookingCreate";
 const adminDataProvider = dataProvider("/api");
 
 const i18nProvider = polyglotI18nProvider((locale) => {
@@ -79,18 +97,40 @@ const AdminApp = () => {
       />
       <Resource
         name="Offer"
-        list={ListGuesser}
-        edit={EditGuesser}
+        list={OfferList}
+        edit={OfferEdit}
+        create={OfferCreate}
         recordRepresentation="offer_title"
       />
-      <Resource name="TimeSlot" list={ListGuesser} edit={EditGuesser} />
-      <Resource name="Booking" list={ListGuesser} edit={EditGuesser} />
-      <Resource name="Payment" list={ListGuesser} edit={EditGuesser} />
-      <Resource name="Score" list={ListGuesser} edit={EditGuesser} />
+      <Resource
+        name="TimeSlot"
+        list={TimeSlotList}
+        edit={TimeSlotEdit}
+        create={TimeSlotCreate}
+      />
+      <Resource
+        name="Booking"
+        list={BookingList}
+        edit={BookingEdit}
+        create={BookingCreate}
+      />
+      <Resource
+        name="Payment"
+        list={PaymentList}
+        edit={PaymentEdit}
+        create={PaymentCreate}
+      />
+      <Resource
+        name="Score"
+        list={ScoreList}
+        edit={ScoreEdit}
+        create={ScoreCreate}
+      />
       <Resource
         name="Course"
-        list={ListGuesser}
-        edit={EditGuesser}
+        list={CourseList}
+        edit={CourseEdit}
+        create={CourseCreate}
         recordRepresentation="course_title"
       />
     </Admin>
