@@ -6,83 +6,20 @@ import {
   FormDataConsumer,
 } from "react-admin";
 
-const UserEdit = () => (
-  <Edit mutationMode="pessimistic">
+const UserEdit = (props) => (
+  <Edit {...props} mutationMode="pessimistic">
     <SimpleForm>
+      <TextInput source="id" disabled />
       <TextInput source="email" label="E-mail" />
       <TextInput source="lastName" label="Nom" />
       <TextInput source="firstName" label="Prénom" />
       <DateInput source="birthday" label="Date de naissance" />
 
-      {/* Téléphone unique */}
+      {/* Adresse */}
       <FormDataConsumer>
         {({ formData }) => {
           const billingAddress = formData.addresses?.find(
             (addr) => addr.type === "billing"
-          );
-          return (
-            <TextInput
-              source="addresses[0].phoneNumber"
-              label="Téléphone"
-              initialValue={billingAddress?.phoneNumber}
-            />
-          );
-        }}
-      </FormDataConsumer>
-
-      {/* Adresse de facturation */}
-      <FormDataConsumer>
-        {({ formData }) => {
-          const billingAddress = formData.addresses?.find(
-            (addr) => addr.type === "billing"
-          );
-          return (
-            <>
-              <h3
-                style={{
-                  marginBottom: "1rem",
-                  color: "#666",
-                  borderBottom: "1px solid #ddd",
-                  paddingBottom: "0.5rem",
-                }}
-              >
-                Adresse de facturation
-              </h3>
-              <TextInput
-                source="addresses[0].street"
-                label="Rue"
-                initialValue={billingAddress?.street}
-              />
-              <TextInput
-                source="addresses[0].city"
-                label="Ville"
-                initialValue={billingAddress?.city}
-              />
-              <TextInput
-                source="addresses[0].postCode"
-                label="Code Postal"
-                initialValue={billingAddress?.postCode}
-              />
-              <TextInput
-                source="addresses[0].country"
-                label="Pays"
-                initialValue={billingAddress?.country}
-              />
-              <TextInput
-                type="hidden"
-                source="addresses[0].type"
-                initialValue="billing"
-              />
-            </>
-          );
-        }}
-      </FormDataConsumer>
-
-      {/* Adresse de livraison */}
-      <FormDataConsumer>
-        {({ formData }) => {
-          const shippingAddress = formData.addresses?.find(
-            (addr) => addr.type === "shipping"
           );
           return (
             <>
@@ -95,32 +32,37 @@ const UserEdit = () => (
                   paddingBottom: "0.5rem",
                 }}
               >
-                Adresse de livraison
+                Adresse
               </h3>
               <TextInput
-                source="addresses[1].street"
+                source="addresses[0].street"
                 label="Rue"
-                initialValue={shippingAddress?.street}
+                defaultValue={billingAddress?.street}
               />
               <TextInput
-                source="addresses[1].city"
+                source="addresses[0].city"
                 label="Ville"
-                initialValue={shippingAddress?.city}
+                defaultValue={billingAddress?.city}
               />
               <TextInput
-                source="addresses[1].postCode"
+                source="addresses[0].postCode"
                 label="Code Postal"
-                initialValue={shippingAddress?.postCode}
+                defaultValue={billingAddress?.postCode}
               />
               <TextInput
-                source="addresses[1].country"
+                source="addresses[0].country"
                 label="Pays"
-                initialValue={shippingAddress?.country}
+                defaultValue={billingAddress?.country}
               />
               <TextInput
-                type="hidden"
-                source="addresses[1].type"
-                initialValue="shipping"
+                source="addresses[0].type"
+                defaultValue="billing"
+                style={{ display: "none" }}
+              />
+              <TextInput
+                source="addresses[0].phoneNumber"
+                defaultValue={billingAddress?.phoneNumber || ""}
+                style={{ display: "none" }}
               />
             </>
           );

@@ -13,7 +13,7 @@ const formatAddress = (address) => {
 
 const UserList = () => (
   <List>
-    <Datagrid>
+    <Datagrid rowClick="edit">
       <EmailField source="email" label="e-mail" />
       <TextField source="lastName" label="Nom" />
       <TextField source="firstName" label="Prénom" />
@@ -29,49 +29,17 @@ const UserList = () => (
           const billingAddress = record.addresses?.find(
             (addr) => addr.type === "billing"
           );
-          const shippingAddress = record.addresses?.find(
-            (addr) => addr.type === "shipping"
-          );
-
-          if (billingAddress?.phoneNumber) {
-            return billingAddress.phoneNumber;
-          }
-          if (shippingAddress?.phoneNumber) {
-            return shippingAddress.phoneNumber;
-          }
-          return "Non renseigné";
+          return billingAddress?.phoneNumber || "Non renseigné";
         }}
       />
       <FunctionField
-        label="Adresse de facturation"
+        label="Adresse"
         render={(record) => {
           const billingAddress = record.addresses?.find(
             (addr) => addr.type === "billing"
           );
           if (!billingAddress) return "Non renseignée";
-
           return formatAddress(billingAddress);
-        }}
-      />
-      <FunctionField
-        label="Adresse de livraison"
-        render={(record) => {
-          const shippingAddress = record.addresses?.find(
-            (addr) => addr.type === "shipping"
-          );
-          const billingAddress = record.addresses?.find(
-            (addr) => addr.type === "billing"
-          );
-
-          // Si pas d'adresse de livraison mais une adresse de facturation existe
-          if (!shippingAddress && billingAddress) {
-            return `${formatAddress(billingAddress)}`;
-          }
-
-          // Si pas d'adresse de livraison ni de facturation
-          if (!shippingAddress) return "Non renseignée";
-
-          return formatAddress(shippingAddress);
         }}
       />
     </Datagrid>
