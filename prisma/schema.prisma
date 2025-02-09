@@ -13,97 +13,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  user_id Int @id @default(autoincrement())
-  user_name String @unique
-  user_email String @unique
-  user_password String
-  user_firstname String
-  user_lastname String
-  user_created_at DateTime @default(now())
-  user_role String @default("user")
-  user_birthday DateTime
+model User {
+  id Int @id @default(autoincrement()) @map("user_id")
+  username String @unique @map("user_name")
+  email String @unique @map("user_email")
+  password String @map("user_password")
+  firstName String @map("user_firstname")
+  lastName String @map("user_lastname")
+  createdAt DateTime @default(now()) @map("user_created_at")
+  role String @default("user") @map("user_role")
+  birthday DateTime @map("user_birthday")
   addresses Address[]
   scores Score[]
   bookings Booking[]
 }
 
-model Address{
-  address_id Int @id @default(autoincrement())
-  address_street String
-  address_city String
-  address_post_code String
-  address_country String
-  phone_number String
-  address_type String @default("billing")
+model Address {
+  id Int @id @default(autoincrement()) @map("address_id")
+  street String @map("address_street")
+  city String @map("address_city")
+  postCode String @map("address_post_code")
+  country String @map("address_country")
+  phoneNumber String @map("phone_number")
+  type String @default("billing") @map("address_type")
   users User[]
 }
 
 model Offer {
-  offer_id Int @id @default(autoincrement())
-  offer_title String
-  offer_description String
-  offer_price Float
-  offer_picture String
-  offer_duration Int
-  offer_created_at DateTime @default(now()) 
+  id Int @id @default(autoincrement()) @map("offer_id")
+  title String @map("offer_title")
+  description String @db.MediumText @map("offer_description")
+  price Float @map("offer_price")
+  picture String @map("offer_picture")
+  duration Int @map("offer_duration")
+  createdAt DateTime @default(now()) @map("offer_created_at")
   bookings Booking[]
 }
 
-model TimeSlot{
-  time_slot_id Int @id @default(autoincrement())
-  start_time DateTime
-  end_time DateTime
-  is_available Boolean @default(true)
-  day_of_week String
-  max_capacity Int
-  booking Booking?
+model TimeSlot {
+  id          Int      @id @default(autoincrement()) @map("time_slot_id")
+  startTime   DateTime @db.Time @map("start_time")
+  endTime     DateTime @db.Time @map("end_time")
+  isAvailable Boolean  @default(true) @map("is_available")
+  booking     Booking?
 }
 
-model Booking{
-  booking_id Int @id @default(autoincrement())
-  booking_date DateTime @default(now())
-  booking_status String @default("pending")
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id Int
-  @@index([user_id])
-  offer Offer @relation(fields: [offer_id], references: [offer_id], onDelete: Cascade)
-  offer_id Int
-  @@index([offer_id])
-  time_slot TimeSlot @relation(fields: [time_slot_id], references: [time_slot_id], onDelete: Cascade)
-  time_slot_id Int @unique
-  @@index([time_slot_id])
-  payment Payment? @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)  
-  payment_id Int?
-  @@index([payment_id])
+model Booking {
+  id Int @id @default(autoincrement()) @map("booking_id")
+  date DateTime @default(now()) @map("booking_date")
+  status String @default("pending") @map("booking_status")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int @map("user_id")
+  @@index([userId])
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  offerId Int @map("offer_id")
+  @@index([offerId])
+  timeSlot TimeSlot @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  timeSlotId Int @unique @map("time_slot_id")
+  @@index([timeSlotId])
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  paymentId Int? @map("payment_id")
+  @@index([paymentId])
 }
 
-model Payment{
-  payment_id Int @id @default(autoincrement())
-  payment_date DateTime @default(now())
-  payment_amount Float
-  tva_amount Float
-  payment_status String @default("pending")
+model Payment {
+  id Int @id @default(autoincrement()) @map("payment_id")
+  date DateTime @default(now()) @map("payment_date")
+  amount Float @map("payment_amount")
+  tvaAmount Float @map("tva_amount")
+  status String @default("pending") @map("payment_status")
   bookings Booking[]
-  @@index([payment_id])
+  @@index([id])
 }
 
-model Score{
-  score_id Int @id @default(autoincrement())
-  score_value Int
-  score_date DateTime @default(now())
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id Int
-  course Course @relation(fields: [course_id], references: [course_id], onDelete: Cascade)
-  course_id Int
-  @@index([user_id])
-  @@index([course_id])
+model Score {
+  id Int @id @default(autoincrement()) @map("score_id")
+  value Int @map("score_value")
+  date DateTime @default(now()) @map("score_date")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int @map("user_id")
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId Int @map("course_id")
+  @@index([userId])
+  @@index([courseId])
 }
 
-model Course{
-  course_id Int @id @default(autoincrement())
-  course_title String
+model Course {
+  id Int @id @default(autoincrement()) @map("course_id")
+  title String @map("course_title")
   scores Score[]
+}
+
+model OpeningHours {
+  id Int @id @default(autoincrement()) @map("opening_hours_id")
+  dayOfWeek String @map("day_of_week")
+  morningStart DateTime @db.Time @map("morning_start")
+  morningEnd DateTime @db.Time @map("morning_end")
+  afternoonStart DateTime @db.Time @map("afternoon_start")
+  afternoonEnd DateTime @db.Time @map("afternoon_end")
 }
 
 
