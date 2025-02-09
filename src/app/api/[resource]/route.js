@@ -8,7 +8,6 @@ const prismaClient = new PrismaClient();
 
 const handler = async (req) => {
   const body = await req.json();
-  console.log("Body reçu:", body); // Log du body reçu
 
   if (body.resource === "User") {
     try {
@@ -159,15 +158,11 @@ const handler = async (req) => {
 
       const total = await prismaClient.user.count();
 
-      console.log("Liste des utilisateurs:", users);
-      console.log("Total des utilisateurs:", total);
-
       const response = {
         data: users,
         total: total,
       };
 
-      console.log("Réponse finale:", response);
       return NextResponse.json(response);
     } catch (error) {
       console.error("Erreur Prisma:", error);
@@ -175,9 +170,8 @@ const handler = async (req) => {
     }
   }
 
-  console.log("Utilisation du defaultHandler");
   const result = await defaultHandler(body, prismaClient);
-  console.log("Résultat du defaultHandler:", result);
+
   return NextResponse.json(result);
 };
 

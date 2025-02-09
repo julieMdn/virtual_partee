@@ -11,15 +11,14 @@ import {
 import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
 import frenchMessages from "ra-language-french";
+import englishMessages from "ra-language-english";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import { Box, Typography } from "@mui/material";
 import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
-import TimeSlotList from "./categories/timeslots/TimeSlotList";
-import TimeSlotEdit from "./categories/timeslots/TimeSlotEdit";
-import TimeSlotCreate from "./categories/timeslots/TimeSlotCreate";
+
 import ScoreList from "./categories/scores/ScoreList";
 import ScoreEdit from "./categories/scores/ScoreEdit";
 import ScoreCreate from "./categories/scores/ScoreCreate";
@@ -42,6 +41,45 @@ const i18nProvider = polyglotI18nProvider((locale) => {
   if (locale === "fr") {
     return {
       ...frenchMessages,
+      resources: {
+        User: {
+          name: "Utilisateur |||| Utilisateurs",
+        },
+        Offer: {
+          name: "Offre |||| Offres",
+        },
+        Booking: {
+          name: "Réservation |||| Réservations",
+        },
+        Score: {
+          name: "Score |||| Scores",
+        },
+        Course: {
+          name: "Parcours |||| Parcours",
+        },
+      },
+    };
+  }
+  if (locale === "en") {
+    return {
+      ...englishMessages,
+      resources: {
+        User: {
+          name: "User |||| Users",
+        },
+        Offers: {
+          name: "Offer |||| Offers",
+        },
+        Bookings: {
+          name: "Booking |||| Bookings",
+        },
+        Scores: {
+          name: "Score |||| Scores",
+        },
+        Courses: {
+          name: "Course |||| Courses",
+        },
+      },
     };
   }
   return {};
@@ -82,12 +120,6 @@ const AdminApp = () => {
         edit={OfferEdit}
         create={OfferCreate}
         recordRepresentation="offer_title"
-      />
-      <Resource
-        name="TimeSlot"
-        list={TimeSlotList}
-        edit={TimeSlotEdit}
-        create={TimeSlotCreate}
       />
       <Resource
         name="Booking"
