@@ -64,7 +64,7 @@ const NavBar = () => {
               Contact
             </Link>
             <Link
-              href="#"
+              href="/login"
               className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
             >
               Se connecter
