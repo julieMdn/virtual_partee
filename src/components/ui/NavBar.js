@@ -58,7 +58,7 @@ const NavBar = () => {
               Nos offres
             </Link>
             <Link
-              href="#"
+              href="/contact"
               className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
             >
               Contact
