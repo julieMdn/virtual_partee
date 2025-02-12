@@ -34,6 +34,16 @@ export async function POST(request) {
         firstName: true,
         lastName: true,
         role: true,
+        birthday: true,
+        addresses: {
+          select: {
+            street: true,
+            city: true,
+            postCode: true,
+            country: true,
+            phoneNumber: true,
+          },
+        },
       },
     });
 
@@ -83,6 +93,8 @@ export async function POST(request) {
           username: user.username,
           firstName: user.firstName,
           lastName: user.lastName,
+          birthday: user.birthday,
+          addresses: user.addresses,
         },
       },
     });

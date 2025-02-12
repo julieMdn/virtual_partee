@@ -109,7 +109,51 @@ export default function Account() {
                           <span className="font-medium">Email :</span>{" "}
                           {user.email}
                         </p>
+                        <p>
+                          <span className="font-medium">
+                            Date de naissance :
+                          </span>{" "}
+                          {user.birthday
+                            ? new Date(user.birthday).toLocaleDateString(
+                                "fr-FR"
+                              )
+                            : "Non renseignée"}
+                        </p>
                       </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-[#002A5C] mb-2">
+                        Adresse
+                      </h3>
+                      {user.addresses && user.addresses.length > 0 ? (
+                        <div className="space-y-4">
+                          <p>
+                            <span className="font-medium">Rue :</span>{" "}
+                            {user.addresses[0].street}
+                          </p>
+                          <p>
+                            <span className="font-medium">Code postal :</span>{" "}
+                            {user.addresses[0].postCode}
+                          </p>
+                          <p>
+                            <span className="font-medium">Ville :</span>{" "}
+                            {user.addresses[0].city}
+                          </p>
+                          <p>
+                            <span className="font-medium">Pays :</span>{" "}
+                            {user.addresses[0].country}
+                          </p>
+                          <p>
+                            <span className="font-medium">Téléphone :</span>{" "}
+                            {user.addresses[0].phoneNumber}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-[#002A5C]/80">
+                          Aucune adresse renseignée
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
