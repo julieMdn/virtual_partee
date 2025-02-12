@@ -7,10 +7,10 @@ const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed w-full bg-[#F9F9F9] border-b border-[#F5E1C0]">
+    <nav className="fixed w-full bg-[#F9F9F9] border-b border-[#F5E1C0] z-50">
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between py-4 px-2">
         <div className="flex items-center space-x-4">
-          <Link href="#" className="text-[#002A5C] text-xl font-bold mr-10">
+          <Link href="/" className="text-[#002A5C] text-xl font-bold mr-10">
             Virtual Partee
           </Link>
           <Link
@@ -52,7 +52,7 @@ const NavBar = () => {
               Le concept
             </Link>
             <Link
-              href="#"
+              href="/offres"
               className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
             >
               Nos offres
