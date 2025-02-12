@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -14,6 +15,7 @@
     "@mui/material": "^6.4.3",
     "@mui/x-date-pickers": "^7.26.0",
     "@prisma/client": "^6.3.0",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

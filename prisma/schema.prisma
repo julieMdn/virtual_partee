@@ -45,7 +45,6 @@ model Offer {
   description String @db.MediumText @map("offer_description")
   price Float @map("offer_price")
   picture String @map("offer_picture")
-  duration Int @map("offer_duration")
   createdAt DateTime @default(now()) @map("offer_created_at")
   bookings Booking[]
 }
