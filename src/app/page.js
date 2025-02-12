@@ -11,8 +11,8 @@ export default async function Home() {
   }
 
   return (
-    <div className="pt-40">
-      <h1 className="text-center text-4xl font-bold mb-12">
+    <div className="pt-40 bg-[#F9F9F9]">
+      <h1 className="text-center text-4xl font-bold mb-12 text-[#002A5C]">
         Bienvenue sur Virtual Partee
       </h1>
 
@@ -21,7 +21,7 @@ export default async function Home() {
           {offers.map((offer) => (
             <div
               key={offer.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 flex flex-col h-full"
+              className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 flex flex-col h-full border border-[#F5E1C0]"
             >
               <div className="relative h-48 w-full">
                 <Image
@@ -35,23 +35,23 @@ export default async function Home() {
 
               <div className="p-6 flex flex-col h-full">
                 <div className="flex-none">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  <h2 className="text-2xl font-semibold text-[#002A5C] mb-4">
                     {offer.title}
                   </h2>
                 </div>
 
                 <div className="flex-grow">
-                  <p className="text-gray-600">{offer.description}</p>
+                  <p className="text-[#002A5C]/80">{offer.description}</p>
                 </div>
 
                 <div className="flex-none mt-6">
                   <div className="flex justify-between items-center mb-6">
-                    <p className="text-3xl font-bold text-blue-600">
+                    <p className="text-3xl font-bold text-[#3C8D0D]">
                       {offer.price.toFixed(2)}€
                     </p>
                   </div>
 
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                  <button className="w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                     Choisir cette offre
                   </button>
                 </div>
