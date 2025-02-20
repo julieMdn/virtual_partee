@@ -1,6 +1,8 @@
 import { getOffers } from "@/lib/serverMethods/offers/getOffers";
 import Image from "next/image";
 import Link from "next/link";
+import { CartProvider } from "@/context/CartContext";
+import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function Offres() {
   const { success, data: offers, error } = await getOffers();
@@ -51,6 +53,7 @@ export default async function Offres() {
                     <p className="text-3xl font-bold text-[#3C8D0D]">
                       {offer.price.toFixed(2)}€
                     </p>
+                    <AddToCartButton offer={offer} />
                   </div>
 
                   <div className="w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center">

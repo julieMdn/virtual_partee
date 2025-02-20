@@ -1,6 +1,7 @@
 import { getOfferById } from "@/lib/serverMethods/offers/getOfferById";
 import Image from "next/image";
 import Link from "next/link";
+import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function OfferDetail({ params: { id } }) {
   // Assurons-nous que l'ID est bien un nombre
@@ -71,7 +72,8 @@ export default async function OfferDetail({ params: { id } }) {
                 </p>
               </div>
 
-              <div className="w-full sm:w-auto">
+              <div className="flex gap-4 w-full sm:w-auto">
+                <AddToCartButton offer={offer} />
                 <button className="w-full sm:w-auto bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-8 rounded-lg transition-colors">
                   Réserver maintenant
                 </button>

@@ -52,7 +52,7 @@ export default async function Home() {
                   </div>
 
                   <button className="w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                    Choisir cette offre
+                    En savoir plus
                   </button>
                 </div>
               </div>
