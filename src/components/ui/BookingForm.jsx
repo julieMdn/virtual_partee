@@ -131,8 +131,7 @@ const BookingForm = () => {
                     : "bg-gray-100 hover:bg-gray-200 text-[#002A5C]"
                 }`}
               >
-                {new Date(slot.startTime).toLocaleTimeString()} -{" "}
-                {new Date(slot.endTime).toLocaleTimeString()}
+                {slot.startTime} - {slot.endTime}
               </button>
             ))}
           </div>

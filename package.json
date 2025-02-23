@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:users": "node prisma/user/seed.js"
+    "seed:opening-hours": "node prisma/seeds/openingHoursSeed.js",
+    "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
