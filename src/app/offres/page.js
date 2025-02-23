@@ -14,16 +14,14 @@ export default async function Offres() {
   }
 
   return (
-    <div className="pt-40 bg-[#F9F9F9]">
+    <div className="pt-40 bg-[#F9F9F9] min-h-screen">
       <h1 className="text-center text-4xl font-bold mb-12 text-[#002A5C]">
         Nos Offres
       </h1>
-
-      <div className="container mx-auto px-4 pb-12">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {offers.map((offer) => (
-            <Link
-              href={`/offres/${offer.id}`}
+            <div
               key={offer.id}
               className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 flex flex-col h-full border border-[#F5E1C0]"
             >
@@ -53,15 +51,25 @@ export default async function Offres() {
                     <p className="text-3xl font-bold text-[#3C8D0D]">
                       {offer.price.toFixed(2)}€
                     </p>
-                    <AddToCartButton offer={offer} />
                   </div>
 
-                  <div className="w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center">
-                    Voir les détails
+                  <div className="flex gap-4">
+                    <Link
+                      href={`/offres/${offer.id}`}
+                      className="flex-1 bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+                    >
+                      Voir les détails
+                    </Link>
+                    <Link
+                      href={`/booking?offerId=${offer.id}`}
+                      className="flex-1 bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+                    >
+                      Réserver
+                    </Link>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

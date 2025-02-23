@@ -41,7 +41,9 @@ export default async function Home() {
                 </div>
 
                 <div className="flex-grow">
-                  <p className="text-[#002A5C]/80">{offer.description}</p>
+                  <p className="text-[#002A5C]/80 line-clamp-2 ">
+                    {offer.description}
+                  </p>
                 </div>
 
                 <div className="flex-none mt-6">

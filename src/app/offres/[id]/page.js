@@ -74,9 +74,6 @@ export default async function OfferDetail({ params: { id } }) {
 
               <div className="flex gap-4 w-full sm:w-auto">
                 <AddToCartButton offer={offer} />
-                <button className="w-full sm:w-auto bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-8 rounded-lg transition-colors">
-                  Réserver maintenant
-                </button>
               </div>
             </div>
 
