@@ -2,9 +2,9 @@ import { getOfferById } from "@/lib/serverMethods/offers/getOfferById";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function OfferDetail({ params: { id } }) {
-  // Assurons-nous que l'ID est bien un nombre
-  const offerId = Number(id);
+export default async function OfferDetail({ params }) {
+  // Attendre les paramètres avant de les utiliser
+  const offerId = Number(params.id);
 
   if (isNaN(offerId)) {
     return (

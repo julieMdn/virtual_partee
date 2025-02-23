@@ -1,24 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { toast } from "react-hot-toast";
+import { useCart } from "@/context/CartContext";
 
 const BookingForm = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { cart, createBooking } = useCart();
   const offerId = searchParams.get("offerId");
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [offer, setOffer] = useState(null);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (offerId) {
-      fetchOffer();
-    }
-  }, [offerId]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -26,146 +23,111 @@ const BookingForm = () => {
     }
   }, [selectedDate]);
 
-  const fetchOffer = async () => {
-    try {
-      const response = await fetch(`/api/offers/${offerId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setOffer(data.data);
-      } else {
-        setError(data.error);
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'offre:", error);
-      setError("Impossible de charger l'offre");
-    }
-  };
-
   const fetchTimeSlots = async () => {
     try {
       const response = await fetch(
         `/api/timeslots?date=${selectedDate.toISOString()}`
       );
       const data = await response.json();
+
       if (data.success) {
-        setTimeSlots(data.data);
+        // Les créneaux sont maintenant générés à partir des horaires d'ouverture
+        setTimeSlots(
+          data.data.map((slot) => ({
+            id: new Date(slot.startTime).toISOString(), // On utilise l'heure comme ID
+            startTime: new Date(slot.startTime).toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            endTime: new Date(slot.endTime).toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          }))
+        );
+      } else {
+        toast.error(data.error || "Ce jour n'est pas ouvert");
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des créneaux:", error);
+      toast.error("Erreur lors de la récupération des créneaux");
     }
   };
 
   const handleReservation = async () => {
-    if (!selectedDate || !selectedTimeSlot) return;
-
     try {
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          offerId,
-          timeSlotId: selectedTimeSlot,
-          date: selectedDate,
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        window.location.href = `/confirmation/${data.data.id}`;
+      if (!selectedDate || !selectedTimeSlot) {
+        toast.error("Veuillez sélectionner une date et un créneau horaire");
+        return;
       }
+
+      await createBooking(
+        parseInt(offerId),
+        selectedDate.toISOString(),
+        selectedTimeSlot.id // On envoie l'heure comme ID
+      );
+
+      toast.success("Réservation confirmée !");
+      router.push("/cart");
     } catch (error) {
-      console.error("Erreur lors de la réservation:", error);
-    }
-  };
-
-  // Fonction pour désactiver les dimanches
-  const tileDisabled = ({ date }) => {
-    return date.getDay() === 0; // 0 représente le dimanche
-  };
-
-  // Fonction pour personnaliser l'apparence des jours désactivés
-  const tileClassName = ({ date }) => {
-    if (date.getDay() === 0) {
-      return "text-gray-300 cursor-not-allowed";
+      console.error("Erreur de réservation:", error);
+      toast.error(error.message || "Erreur lors de la réservation");
     }
   };
 
   return (
-    <>
-      {offer && (
-        <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-          <h2 className="text-2xl font-semibold text-[#002A5C] mb-4">
-            {offer.title}
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <Calendar
+          onChange={setSelectedDate}
+          value={selectedDate}
+          minDate={new Date()}
+          className="w-full"
+        />
+      </div>
+
+      {selectedDate && (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-[#002A5C]">
+            Créneaux disponibles pour le{" "}
+            {selectedDate.toLocaleDateString("fr-FR", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </h2>
-          <p className="text-[#002A5C]/80 mb-4">{offer.description}</p>
-          <p className="text-2xl font-bold text-[#3C8D0D]">
-            {offer.price.toFixed(2)}€
-          </p>
-        </div>
-      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold text-[#002A5C] mb-4">
-            Sélectionnez une date
-          </h3>
-          <Calendar
-            onChange={setSelectedDate}
-            value={selectedDate}
-            minDate={new Date()}
-            className="w-full"
-            tileDisabled={tileDisabled}
-            tileClassName={tileClassName}
-          />
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold text-[#002A5C] mb-4">
-            Créneaux disponibles
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             {timeSlots.map((slot) => (
               <button
                 key={slot.id}
-                onClick={() => setSelectedTimeSlot(slot.id)}
+                onClick={() => setSelectedTimeSlot(slot)}
                 className={`p-3 rounded-lg text-center transition-colors ${
-                  selectedTimeSlot === slot.id
+                  selectedTimeSlot?.id === slot.id
                     ? "bg-[#3C8D0D] text-white"
                     : "bg-gray-100 hover:bg-gray-200 text-[#002A5C]"
                 }`}
               >
-                {slot.startTime} - {slot.endTime}
+                {slot.startTime}
               </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      <div className="mt-8 text-center">
-        <button
-          onClick={handleReservation}
-          disabled={!selectedDate || !selectedTimeSlot}
-          className={`px-8 py-4 rounded-lg text-white text-lg font-semibold transition-colors ${
-            selectedDate && selectedTimeSlot
-              ? "bg-[#3C8D0D] hover:bg-[#327A0B]"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
-        >
-          Confirmer la réservation
-        </button>
-      </div>
-    </>
+          <button
+            onClick={handleReservation}
+            disabled={!selectedTimeSlot}
+            className={`w-full py-3 rounded-lg text-white font-semibold transition-colors ${
+              selectedTimeSlot
+                ? "bg-[#3C8D0D] hover:bg-[#327A0B]"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Confirmer la réservation
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

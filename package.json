@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "seed:opening-hours": "node prisma/seeds/openingHoursSeed.js",
-    "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js"
+    "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js",
+    "seed:users": "node prisma/seeds/usersSeed.js",
+    "seed:addresses": "node prisma/seeds/addressesSeed.js",
+    "seed:all": "node prisma/seeds/mainSeed.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -24,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.475.0",
     "next": "15.1.6",
+    "prisma": "^6.4.0",
     "ra-data-json-server": "^5.5.3",
     "ra-data-simple-prisma": "^5.2.1",
     "ra-language-french": "^5.5.3",

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { getCartCount } = useCart();
 
   return (
     <nav className="fixed w-full bg-[#F9F9F9] border-b border-[#F5E1C0] z-50">
@@ -14,7 +16,7 @@ const NavBar = () => {
             Virtual Partee
           </Link>
           <Link
-            href="/booking"
+            href="/offres"
             className="hidden lg:inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200"
           >
             Réserver
@@ -38,9 +40,9 @@ const NavBar = () => {
             isMenuOpen ? "block" : "hidden"
           } w-full lg:flex lg:w-auto lg:items-center`}
         >
-          <div className="flex flex-col lg:flex-row">
+          <div className="flex flex-col lg:flex-row items-center">
             <Link
-              href="/booking"
+              href="/offres"
               className="inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200 lg:hidden"
             >
               Réserver
@@ -62,6 +64,17 @@ const NavBar = () => {
               className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
             >
               Contact
+            </Link>
+            <Link
+              href="/cart"
+              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D] flex items-center"
+            >
+              Panier
+              {getCartCount() > 0 && (
+                <span className="ml-2 bg-[#3C8D0D] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {getCartCount()}
+                </span>
+              )}
             </Link>
             <Link
               href="/login"
