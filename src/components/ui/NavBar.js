@@ -14,7 +14,7 @@ const NavBar = () => {
             Virtual Partee
           </Link>
           <Link
-            href="#"
+            href="/booking"
             className="hidden lg:inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200"
           >
             Réserver
@@ -40,7 +40,7 @@ const NavBar = () => {
         >
           <div className="flex flex-col lg:flex-row">
             <Link
-              href="#"
+              href="/booking"
               className="inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200 lg:hidden"
             >
               Réserver

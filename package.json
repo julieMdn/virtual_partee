@@ -7,14 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:users": "node prisma/user/seed.js"
+    "seed:opening-hours": "node prisma/seeds/openingHoursSeed.js",
+    "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.3",
     "@mui/x-date-pickers": "^7.26.0",
-    "@prisma/client": "^6.3.0",
+    "@prisma/client": "^6.4.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
@@ -28,7 +29,9 @@
     "ra-language-french": "^5.5.3",
     "react": "^19.0.0",
     "react-admin": "^5.5.3",
+    "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -37,7 +40,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
-    "prisma": "^6.3.0",
     "tailwindcss": "^3.4.1"
   }
 }

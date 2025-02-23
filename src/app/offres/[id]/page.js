@@ -71,11 +71,12 @@ export default async function OfferDetail({ params: { id } }) {
                 </p>
               </div>
 
-              <div className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-8 rounded-lg transition-colors">
-                  Réserver maintenant
-                </button>
-              </div>
+              <Link
+                href={`/booking?offerId=${offer.id}`}
+                className="w-full sm:w-auto bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-12 rounded-lg transition-colors text-center"
+              >
+                Réserver
+              </Link>
             </div>
 
             <div className="mt-8 pt-6 border-t border-[#F5E1C0]">
