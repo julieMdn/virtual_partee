@@ -53,20 +53,12 @@ export default async function Offres() {
                     </p>
                   </div>
 
-                  <div className="flex gap-4">
-                    <Link
-                      href={`/offres/${offer.id}`}
-                      className="flex-1 bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-                    >
-                      Voir les détails
-                    </Link>
-                    <Link
-                      href={`/booking?offerId=${offer.id}`}
-                      className="flex-1 bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-                    >
-                      Réserver
-                    </Link>
-                  </div>
+                  <Link
+                    href={`/offres/${offer.id}`}
+                    className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+                  >
+                    Voir les détails
+                  </Link>
                 </div>
               </div>
             </div>

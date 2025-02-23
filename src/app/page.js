@@ -1,5 +1,6 @@
 import { getOffers } from "@/lib/serverMethods/offers/getOffers";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function Home() {
   const { success, data: offers, error } = await getOffers();
@@ -41,7 +42,7 @@ export default async function Home() {
                 </div>
 
                 <div className="flex-grow">
-                  <p className="text-[#002A5C]/80 line-clamp-2 ">
+                  <p className="text-[#002A5C]/80 line-clamp-2">
                     {offer.description}
                   </p>
                 </div>
@@ -53,9 +54,12 @@ export default async function Home() {
                     </p>
                   </div>
 
-                  <button className="w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                  <Link
+                    href={`/offres/${offer.id}`}
+                    className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+                  >
                     En savoir plus
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

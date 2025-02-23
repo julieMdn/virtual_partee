@@ -89,6 +89,18 @@ const BookingForm = () => {
     }
   };
 
+  // Fonction pour désactiver les dimanches
+  const tileDisabled = ({ date }) => {
+    return date.getDay() === 0; // 0 représente le dimanche
+  };
+
+  // Fonction pour personnaliser l'apparence des jours désactivés
+  const tileClassName = ({ date }) => {
+    if (date.getDay() === 0) {
+      return "text-gray-300 cursor-not-allowed";
+    }
+  };
+
   return (
     <>
       {offer && (
@@ -113,6 +125,8 @@ const BookingForm = () => {
             value={selectedDate}
             minDate={new Date()}
             className="w-full"
+            tileDisabled={tileDisabled}
+            tileClassName={tileClassName}
           />
         </div>
 

@@ -4,7 +4,14 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.openingHours.deleteMany({});
 
-  const daysOfWeek = ["lundi", "mardi", "mercredi", "jeudi", "vendredi"];
+  const daysOfWeek = [
+    "lundi",
+    "mardi",
+    "mercredi",
+    "jeudi",
+    "vendredi",
+    "samedi",
+  ];
 
   for (const day of daysOfWeek) {
     await prisma.openingHours.create({
