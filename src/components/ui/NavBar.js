@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { FaShoppingCart } from "react-icons/fa";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -66,21 +67,22 @@ const NavBar = () => {
               Contact
             </Link>
             <Link
-              href="/cart"
-              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D] flex items-center"
-            >
-              Panier
-              {getCartCount() > 0 && (
-                <span className="ml-2 bg-[#3C8D0D] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {getCartCount()}
-                </span>
-              )}
-            </Link>
-            <Link
               href="/login"
               className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
             >
               Se connecter
+            </Link>
+            <Link
+              href="/cart"
+              className="text-[#002A5C] py-2 lg:py-0 lg:ml-2 hover:text-[#3C8D0D] relative"
+              aria-label="Panier"
+            >
+              <FaShoppingCart className="text-xl" />
+              {getCartCount() > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#3C8D0D] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {getCartCount()}
+                </span>
+              )}
             </Link>
           </div>
         </div>
