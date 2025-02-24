@@ -1,8 +1,6 @@
 import { getOffers } from "@/lib/serverMethods/offers/getOffers";
 import Image from "next/image";
 import Link from "next/link";
-import { CartProvider } from "@/context/CartContext";
-import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function Offres() {
   const { success, data: offers, error } = await getOffers();

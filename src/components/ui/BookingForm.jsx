@@ -1,20 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { toast } from "react-hot-toast";
+import { useCart } from "@/context/CartContext";
 
 const BookingForm = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { cart, addToCart } = useCart();
   const offerId = searchParams.get("offerId");
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [offer, setOffer] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Charger les détails de l'offre
+    const fetchOffer = async () => {
+      const response = await fetch(`/api/offers/${offerId}`);
+      const data = await response.json();
+      if (data.success) {
+        setOffer(data.data);
+      }
+    };
     if (offerId) {
       fetchOffer();
     }
@@ -26,146 +37,146 @@ const BookingForm = () => {
     }
   }, [selectedDate]);
 
-  const fetchOffer = async () => {
-    try {
-      const response = await fetch(`/api/offers/${offerId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setOffer(data.data);
-      } else {
-        setError(data.error);
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'offre:", error);
-      setError("Impossible de charger l'offre");
-    }
-  };
+  // Debug log au montage du composant
+  useEffect(() => {
+    console.log("Current cart:", cart);
+    console.log("OfferId from URL:", offerId);
+  }, [cart, offerId]);
 
   const fetchTimeSlots = async () => {
     try {
+      // Vérifier si c'est un dimanche
+      if (selectedDate.getDay() === 0) {
+        setTimeSlots([]);
+        return;
+      }
+
       const response = await fetch(
         `/api/timeslots?date=${selectedDate.toISOString()}`
       );
       const data = await response.json();
+
       if (data.success) {
-        setTimeSlots(data.data);
+        // Filtrer les créneaux pour s'assurer qu'ils sont entre 9h et 19h
+        setTimeSlots(
+          data.data
+            .filter((slot) => {
+              const hour = new Date(slot.startTime).getHours();
+              return hour >= 9 && hour <= 19;
+            })
+            .map((slot) => ({
+              id: new Date(slot.startTime).toISOString(),
+              startTime: new Date(slot.startTime).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              endTime: new Date(slot.endTime).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            }))
+        );
+      } else {
+        setTimeSlots([]);
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des créneaux:", error);
+      toast.error("Erreur lors de la récupération des créneaux");
     }
   };
 
-  const handleReservation = async () => {
-    if (!selectedDate || !selectedTimeSlot) return;
-
-    try {
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          offerId,
-          timeSlotId: selectedTimeSlot,
-          date: selectedDate,
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        window.location.href = `/confirmation/${data.data.id}`;
-      }
-    } catch (error) {
-      console.error("Erreur lors de la réservation:", error);
+  const handleAddToCart = () => {
+    if (!selectedTimeSlot || !offer) {
+      toast.error("Veuillez sélectionner un créneau horaire");
+      return;
     }
+
+    addToCart({
+      ...offer,
+      selectedDate,
+      timeSlot: selectedTimeSlot,
+    });
+
+    router.push("/cart");
   };
 
   // Fonction pour désactiver les dimanches
   const tileDisabled = ({ date }) => {
-    return date.getDay() === 0; // 0 représente le dimanche
-  };
-
-  // Fonction pour personnaliser l'apparence des jours désactivés
-  const tileClassName = ({ date }) => {
-    if (date.getDay() === 0) {
-      return "text-gray-300 cursor-not-allowed";
-    }
+    return date.getDay() === 0; // 0 = Dimanche
   };
 
   return (
-    <>
-      {offer && (
-        <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-          <h2 className="text-2xl font-semibold text-[#002A5C] mb-4">
-            {offer.title}
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <style jsx global>{`
+          /* Réinitialiser tous les styles de weekend */
+          .react-calendar__tile--weekend {
+            color: inherit !important;
+          }
+
+          /* Appliquer le rouge uniquement aux dimanches */
+          .react-calendar__tile--weekend.react-calendar__tile--disabled {
+            color: #d10000 !important;
+          }
+
+          /* S'assurer que les samedis restent de la couleur normale */
+          .react-calendar__tile--weekend:not(.react-calendar__tile--disabled) {
+            color: inherit !important;
+          }
+
+          /* Style spécifique pour les samedis */
+          .react-calendar__month-view__days__day--weekend:not(:nth-child(7n)) {
+            color: inherit !important;
+          }
+        `}</style>
+        <Calendar
+          onChange={setSelectedDate}
+          value={selectedDate}
+          minDate={new Date()}
+          className="w-full"
+          tileDisabled={tileDisabled}
+        />
+      </div>
+
+      {selectedDate && selectedDate.getDay() !== 0 && (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-[#002A5C]">
+            Créneaux disponibles pour le{" "}
+            {selectedDate.toLocaleDateString("fr-FR", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </h2>
-          <p className="text-[#002A5C]/80 mb-4">{offer.description}</p>
-          <p className="text-2xl font-bold text-[#3C8D0D]">
-            {offer.price.toFixed(2)}€
-          </p>
-        </div>
-      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold text-[#002A5C] mb-4">
-            Sélectionnez une date
-          </h3>
-          <Calendar
-            onChange={setSelectedDate}
-            value={selectedDate}
-            minDate={new Date()}
-            className="w-full"
-            tileDisabled={tileDisabled}
-            tileClassName={tileClassName}
-          />
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold text-[#002A5C] mb-4">
-            Créneaux disponibles
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             {timeSlots.map((slot) => (
               <button
                 key={slot.id}
-                onClick={() => setSelectedTimeSlot(slot.id)}
+                onClick={() => setSelectedTimeSlot(slot)}
                 className={`p-3 rounded-lg text-center transition-colors ${
-                  selectedTimeSlot === slot.id
+                  selectedTimeSlot?.id === slot.id
                     ? "bg-[#3C8D0D] text-white"
                     : "bg-gray-100 hover:bg-gray-200 text-[#002A5C]"
                 }`}
               >
-                {slot.startTime} - {slot.endTime}
+                {slot.startTime}
               </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      <div className="mt-8 text-center">
-        <button
-          onClick={handleReservation}
-          disabled={!selectedDate || !selectedTimeSlot}
-          className={`px-8 py-4 rounded-lg text-white text-lg font-semibold transition-colors ${
-            selectedDate && selectedTimeSlot
-              ? "bg-[#3C8D0D] hover:bg-[#327A0B]"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
-        >
-          Confirmer la réservation
-        </button>
-      </div>
-    </>
+          {selectedTimeSlot && (
+            <button
+              onClick={handleAddToCart}
+              className="w-full py-3 rounded-lg text-white font-semibold bg-[#3C8D0D] hover:bg-[#327A0B] transition-colors"
+            >
+              Ajouter au panier
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

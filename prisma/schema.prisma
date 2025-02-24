@@ -50,11 +50,12 @@ model Offer {
 }
 
 model TimeSlot {
-  id          Int      @id @default(autoincrement()) @map("time_slot_id")
-  startTime   DateTime @db.Time @map("start_time")
-  endTime     DateTime @db.Time @map("end_time")
-  isAvailable Boolean  @default(true) @map("is_available")
-  booking     Booking?
+  id          Int       @id @default(autoincrement())
+  startTime   DateTime
+  endTime     DateTime
+  isAvailable Boolean   @default(false)  // Par défaut false car on ne stocke que les créneaux non disponibles
+  date        DateTime  // Ajout d'une date spécifique
+  bookings    Booking[]
 }
 
 model Booking {
@@ -104,12 +105,12 @@ model Course {
 }
 
 model OpeningHours {
-  id Int @id @default(autoincrement()) @map("opening_hours_id")
-  dayOfWeek String @map("day_of_week")
-  morningStart DateTime @db.Time @map("morning_start")
-  morningEnd DateTime @db.Time @map("morning_end")
-  afternoonStart DateTime @db.Time @map("afternoon_start")
-  afternoonEnd DateTime @db.Time @map("afternoon_end")
+  id            Int      @id @default(autoincrement())
+  dayOfWeek     String
+  morningStart  DateTime
+  morningEnd    DateTime
+  afternoonStart DateTime
+  afternoonEnd   DateTime
 }
 
 

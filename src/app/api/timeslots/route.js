@@ -7,11 +7,22 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const date = new Date(searchParams.get("date"));
-    const dayOfWeek = date
-      .toLocaleDateString("fr-FR", { weekday: "long" })
-      .toLowerCase();
 
-    // Vérifier les horaires d'ouverture
+    // Convertir le jour en anglais pour correspondre à la base de données
+    const days = {
+      dimanche: "sunday",
+      lundi: "monday",
+      mardi: "tuesday",
+      mercredi: "wednesday",
+      jeudi: "thursday",
+      vendredi: "friday",
+      samedi: "saturday",
+    };
+
+    const dayOfWeek =
+      days[date.toLocaleDateString("fr-FR", { weekday: "long" }).toLowerCase()];
+
+    // 1. Récupérer les horaires d'ouverture pour ce jour
     const openingHours = await prisma.openingHours.findFirst({
       where: { dayOfWeek },
     });
@@ -19,57 +30,67 @@ export async function GET(request) {
     if (!openingHours) {
       return NextResponse.json({
         success: false,
-        error: "Nous sommes fermés ce jour-là",
+        error: "Ce jour n'est pas ouvert",
       });
     }
 
-    // Récupérer tous les créneaux
-    const timeSlots = await prisma.timeSlot.findMany({
-      where: {
-        isAvailable: true,
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-    });
-
-    // Récupérer les réservations existantes pour cette date
-    const existingBookings = await prisma.booking.findMany({
+    // 2. Récupérer les créneaux non disponibles pour cette date
+    const unavailableSlots = await prisma.timeSlot.findMany({
       where: {
         date: {
-          gte: new Date(date.setHours(0, 0, 0, 0)),
-          lt: new Date(date.setHours(23, 59, 59, 999)),
+          gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+          lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
         },
+        isAvailable: false,
       },
     });
 
-    // Générer les créneaux disponibles
-    const slots = [];
+    // 3. Générer tous les créneaux disponibles
+    const availableSlots = [];
 
-    // Créneaux du matin (9h-12h)
-    for (let hour = 9; hour < 12; hour++) {
-      slots.push({
-        id: hour,
-        startTime: `${hour.toString().padStart(2, "0")}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
-      });
-    }
+    // Créneaux du matin (en commençant à 9h)
+    for (
+      let h = openingHours.morningStart.getHours(); // Devrait être 9h
+      h < openingHours.morningEnd.getHours(); // Devrait être 12h
+      h++
+    ) {
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
 
-    // Créneaux de l'après-midi (14h-20h)
-    for (let hour = 14; hour < 20; hour++) {
-      slots.push({
-        id: hour,
-        startTime: `${hour.toString().padStart(2, "0")}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
-      });
-    }
-
-    // Filtrer les créneaux déjà réservés
-    const availableSlots = slots.filter((slot) => {
-      return !existingBookings.some(
-        (booking) => booking.timeSlotId === slot.id
+      // Vérifier si le créneau n'est pas déjà réservé
+      const isReserved = unavailableSlots.some(
+        (slot) => slot.startTime.getHours() === h
       );
-    });
+
+      if (!isReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+        });
+      }
+    }
+
+    // Créneaux de l'après-midi (jusqu'à 19h max)
+    for (
+      let h = openingHours.afternoonStart.getHours(); // Devrait être 14h
+      h < openingHours.afternoonEnd.getHours() - 1; // Devrait être 19h (pas 20h)
+      h++
+    ) {
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
+
+      // Vérifier si le créneau n'est pas déjà réservé
+      const isReserved = unavailableSlots.some(
+        (slot) => slot.startTime.getHours() === h
+      );
+
+      if (!isReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,
