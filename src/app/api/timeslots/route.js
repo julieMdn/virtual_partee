@@ -48,10 +48,10 @@ export async function GET(request) {
     // 3. Générer tous les créneaux disponibles
     const availableSlots = [];
 
-    // Créneaux du matin
+    // Créneaux du matin (en commençant à 9h)
     for (
-      let h = openingHours.morningStart.getHours();
-      h < openingHours.morningEnd.getHours();
+      let h = openingHours.morningStart.getHours(); // Devrait être 9h
+      h < openingHours.morningEnd.getHours(); // Devrait être 12h
       h++
     ) {
       const slotStart = new Date(date);
@@ -70,10 +70,10 @@ export async function GET(request) {
       }
     }
 
-    // Créneaux de l'après-midi
+    // Créneaux de l'après-midi (jusqu'à 19h max)
     for (
-      let h = openingHours.afternoonStart.getHours();
-      h < openingHours.afternoonEnd.getHours();
+      let h = openingHours.afternoonStart.getHours(); // Devrait être 14h
+      h < openingHours.afternoonEnd.getHours() - 1; // Devrait être 19h (pas 20h)
       h++
     ) {
       const slotStart = new Date(date);

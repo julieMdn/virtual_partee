@@ -11,7 +11,7 @@
     "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js",
     "seed:users": "node prisma/seeds/usersSeed.js",
     "seed:addresses": "node prisma/seeds/addressesSeed.js",
-    "seed:all": "node prisma/seeds/mainSeed.js"
+    "seed:offers": "node prisma/seeds/offersSeed.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

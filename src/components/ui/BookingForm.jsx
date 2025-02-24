@@ -45,28 +45,39 @@ const BookingForm = () => {
 
   const fetchTimeSlots = async () => {
     try {
+      // Vérifier si c'est un dimanche
+      if (selectedDate.getDay() === 0) {
+        setTimeSlots([]);
+        return;
+      }
+
       const response = await fetch(
         `/api/timeslots?date=${selectedDate.toISOString()}`
       );
       const data = await response.json();
 
       if (data.success) {
-        // Les créneaux sont maintenant générés à partir des horaires d'ouverture
+        // Filtrer les créneaux pour s'assurer qu'ils sont entre 9h et 19h
         setTimeSlots(
-          data.data.map((slot) => ({
-            id: new Date(slot.startTime).toISOString(), // On utilise l'heure comme ID
-            startTime: new Date(slot.startTime).toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            endTime: new Date(slot.endTime).toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-          }))
+          data.data
+            .filter((slot) => {
+              const hour = new Date(slot.startTime).getHours();
+              return hour >= 9 && hour <= 19;
+            })
+            .map((slot) => ({
+              id: new Date(slot.startTime).toISOString(),
+              startTime: new Date(slot.startTime).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              endTime: new Date(slot.endTime).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            }))
         );
       } else {
-        toast.error(data.error || "Ce jour n'est pas ouvert");
+        setTimeSlots([]);
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des créneaux:", error);
@@ -89,18 +100,45 @@ const BookingForm = () => {
     router.push("/cart");
   };
 
+  // Fonction pour désactiver les dimanches
+  const tileDisabled = ({ date }) => {
+    return date.getDay() === 0; // 0 = Dimanche
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <style jsx global>{`
+          /* Réinitialiser tous les styles de weekend */
+          .react-calendar__tile--weekend {
+            color: inherit !important;
+          }
+
+          /* Appliquer le rouge uniquement aux dimanches */
+          .react-calendar__tile--weekend.react-calendar__tile--disabled {
+            color: #d10000 !important;
+          }
+
+          /* S'assurer que les samedis restent de la couleur normale */
+          .react-calendar__tile--weekend:not(.react-calendar__tile--disabled) {
+            color: inherit !important;
+          }
+
+          /* Style spécifique pour les samedis */
+          .react-calendar__month-view__days__day--weekend:not(:nth-child(7n)) {
+            color: inherit !important;
+          }
+        `}</style>
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}
           minDate={new Date()}
           className="w-full"
+          tileDisabled={tileDisabled}
         />
       </div>
 
-      {selectedDate && (
+      {selectedDate && selectedDate.getDay() !== 0 && (
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 text-[#002A5C]">
             Créneaux disponibles pour le{" "}
