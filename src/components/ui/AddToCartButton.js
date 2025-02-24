@@ -2,18 +2,23 @@
 
 import { useCart } from "@/context/CartContext";
 
-export default function AddToCartButton({ offer }) {
+export default function AddToCartButton({ offer, timeSlot }) {
   const { addToCart } = useCart();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    addToCart({
+      ...offer,
+      timeSlot: timeSlot,
+    });
+  };
 
   return (
     <button
-      onClick={(e) => {
-        e.preventDefault(); // Pour éviter la navigation sur les cartes cliquables
-        addToCart(offer);
-      }}
+      onClick={handleClick}
       className="bg-[#F5E1C0] hover:bg-[#F0D4A8] text-[#002A5C] font-semibold py-3 px-6 rounded-lg transition-colors"
     >
-      Réserver
+      Ajouter au panier
     </button>
   );
 }

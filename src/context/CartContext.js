@@ -30,12 +30,22 @@ export function CartProvider({ children }) {
       return;
     }
 
-    setCart((prevCart) => [...prevCart, { ...offer, quantity: 1 }]);
-    toast.success("Offre ajoutée au panier");
+    const newItem = {
+      ...offer,
+      id: Number(offer.id),
+      quantity: 1,
+      selectedDate: offer.selectedDate,
+      timeSlot: offer.timeSlot,
+    };
+
+    setCart((prevCart) => [...prevCart, newItem]);
+    toast.success("Réservation ajoutée au panier");
   };
 
   const removeFromCart = (offerId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== offerId));
+    // S'assurer que l'ID est un nombre
+    const numericId = parseInt(offerId);
+    setCart((prevCart) => prevCart.filter((item) => item.id !== numericId));
     toast.success("Offre retirée du panier");
   };
 

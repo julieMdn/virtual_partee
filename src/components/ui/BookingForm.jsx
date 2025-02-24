@@ -6,22 +6,43 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { toast } from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
+import AddToCartButton from "./AddToCartButton";
 
 const BookingForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { cart, createBooking } = useCart();
+  const { cart, addToCart } = useCart();
   const offerId = searchParams.get("offerId");
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [error, setError] = useState(null);
+  const [offer, setOffer] = useState(null);
+
+  useEffect(() => {
+    // Charger les détails de l'offre
+    const fetchOffer = async () => {
+      const response = await fetch(`/api/offers/${offerId}`);
+      const data = await response.json();
+      if (data.success) {
+        setOffer(data.data);
+      }
+    };
+    if (offerId) {
+      fetchOffer();
+    }
+  }, [offerId]);
 
   useEffect(() => {
     if (selectedDate) {
       fetchTimeSlots();
     }
   }, [selectedDate]);
+
+  // Debug log au montage du composant
+  useEffect(() => {
+    console.log("Current cart:", cart);
+    console.log("OfferId from URL:", offerId);
+  }, [cart, offerId]);
 
   const fetchTimeSlots = async () => {
     try {
@@ -54,25 +75,19 @@ const BookingForm = () => {
     }
   };
 
-  const handleReservation = async () => {
-    try {
-      if (!selectedDate || !selectedTimeSlot) {
-        toast.error("Veuillez sélectionner une date et un créneau horaire");
-        return;
-      }
-
-      await createBooking(
-        parseInt(offerId),
-        selectedDate.toISOString(),
-        selectedTimeSlot.id // On envoie l'heure comme ID
-      );
-
-      toast.success("Réservation confirmée !");
-      router.push("/cart");
-    } catch (error) {
-      console.error("Erreur de réservation:", error);
-      toast.error(error.message || "Erreur lors de la réservation");
+  const handleAddToCart = () => {
+    if (!selectedTimeSlot || !offer) {
+      toast.error("Veuillez sélectionner un créneau horaire");
+      return;
     }
+
+    addToCart({
+      ...offer,
+      selectedDate,
+      timeSlot: selectedTimeSlot,
+    });
+
+    router.push("/cart");
   };
 
   return (
@@ -114,17 +129,14 @@ const BookingForm = () => {
             ))}
           </div>
 
-          <button
-            onClick={handleReservation}
-            disabled={!selectedTimeSlot}
-            className={`w-full py-3 rounded-lg text-white font-semibold transition-colors ${
-              selectedTimeSlot
-                ? "bg-[#3C8D0D] hover:bg-[#327A0B]"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Confirmer la réservation
-          </button>
+          {selectedTimeSlot && (
+            <button
+              onClick={handleAddToCart}
+              className="w-full py-3 rounded-lg text-white font-semibold bg-[#3C8D0D] hover:bg-[#327A0B] transition-colors"
+            >
+              Ajouter au panier
+            </button>
+          )}
         </div>
       )}
     </div>

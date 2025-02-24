@@ -8,8 +8,21 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const date = new Date(searchParams.get("date"));
 
+    // Convertir le jour en anglais pour correspondre à la base de données
+    const days = {
+      dimanche: "sunday",
+      lundi: "monday",
+      mardi: "tuesday",
+      mercredi: "wednesday",
+      jeudi: "thursday",
+      vendredi: "friday",
+      samedi: "saturday",
+    };
+
+    const dayOfWeek =
+      days[date.toLocaleDateString("fr-FR", { weekday: "long" }).toLowerCase()];
+
     // 1. Récupérer les horaires d'ouverture pour ce jour
-    const dayOfWeek = date.toLocaleDateString("fr-FR", { weekday: "long" });
     const openingHours = await prisma.openingHours.findFirst({
       where: { dayOfWeek },
     });
@@ -25,15 +38,15 @@ export async function GET(request) {
     const unavailableSlots = await prisma.timeSlot.findMany({
       where: {
         date: {
-          gte: new Date(date.setHours(0, 0, 0, 0)),
-          lt: new Date(date.setHours(23, 59, 59, 999)),
+          gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+          lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
         },
         isAvailable: false,
       },
     });
 
-    // 3. Générer tous les créneaux d'une heure basés sur les horaires d'ouverture
-    const allSlots = [];
+    // 3. Générer tous les créneaux disponibles
+    const availableSlots = [];
 
     // Créneaux du matin
     for (
@@ -41,13 +54,20 @@ export async function GET(request) {
       h < openingHours.morningEnd.getHours();
       h++
     ) {
-      allSlots.push({
-        startTime: `${h.toString().padStart(2, "0")}:00`,
-        endTime: `${(h + 1).toString().padStart(2, "0")}:00`,
-        isAvailable: !unavailableSlots.some(
-          (slot) => slot.startTime.getHours() === h
-        ),
-      });
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
+
+      // Vérifier si le créneau n'est pas déjà réservé
+      const isReserved = unavailableSlots.some(
+        (slot) => slot.startTime.getHours() === h
+      );
+
+      if (!isReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+        });
+      }
     }
 
     // Créneaux de l'après-midi
@@ -56,18 +76,25 @@ export async function GET(request) {
       h < openingHours.afternoonEnd.getHours();
       h++
     ) {
-      allSlots.push({
-        startTime: `${h.toString().padStart(2, "0")}:00`,
-        endTime: `${(h + 1).toString().padStart(2, "0")}:00`,
-        isAvailable: !unavailableSlots.some(
-          (slot) => slot.startTime.getHours() === h
-        ),
-      });
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
+
+      // Vérifier si le créneau n'est pas déjà réservé
+      const isReserved = unavailableSlots.some(
+        (slot) => slot.startTime.getHours() === h
+      );
+
+      if (!isReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+        });
+      }
     }
 
     return NextResponse.json({
       success: true,
-      data: allSlots.filter((slot) => slot.isAvailable),
+      data: availableSlots,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des créneaux:", error);
@@ -75,5 +102,7 @@ export async function GET(request) {
       success: false,
       error: "Erreur lors de la récupération des créneaux",
     });
+  } finally {
+    await prisma.$disconnect();
   }
 }
