@@ -23,16 +23,23 @@ export function CartProvider({ children }) {
   }, [cart]);
 
   const addToCart = (offer) => {
-    const existingItem = cart.find((item) => item.id === offer.id);
+    // Au lieu de vérifier juste l'ID, on vérifie aussi le créneau horaire
+    const existingItem = cart.find(
+      (item) =>
+        item.id === offer.id &&
+        item.timeSlot?.id === offer.timeSlot?.id &&
+        item.selectedDate?.toISOString() === offer.selectedDate?.toISOString()
+    );
 
     if (existingItem) {
-      toast.error("Cette offre est déjà dans votre panier");
+      toast.error("Cette réservation est déjà dans votre panier");
       return;
     }
 
     const newItem = {
       ...offer,
       id: Number(offer.id),
+      cartId: `${offer.id}-${Date.now()}`, // Identifiant unique pour chaque item du panier
       quantity: 1,
       selectedDate: offer.selectedDate,
       timeSlot: offer.timeSlot,
@@ -42,11 +49,10 @@ export function CartProvider({ children }) {
     toast.success("Réservation ajoutée au panier");
   };
 
-  const removeFromCart = (offerId) => {
-    // S'assurer que l'ID est un nombre
-    const numericId = parseInt(offerId);
-    setCart((prevCart) => prevCart.filter((item) => item.id !== numericId));
-    toast.success("Offre retirée du panier");
+  const removeFromCart = (cartId) => {
+    // Utiliser cartId au lieu de offerId
+    setCart((prevCart) => prevCart.filter((item) => item.cartId !== cartId));
+    toast.success("Réservation retirée du panier");
   };
 
   const clearCart = () => {

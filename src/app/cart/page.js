@@ -38,10 +38,10 @@ export default function CartPage() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          <div key="cart-items" className="lg:col-span-2">
             {cart.map((item) => (
               <div
-                key={item.id}
+                key={item.cartId}
                 className="bg-white rounded-xl shadow-lg p-6 mb-4 flex items-center"
               >
                 <div className="relative h-24 w-24 flex-shrink-0">
@@ -59,9 +59,13 @@ export default function CartPage() {
                   <p className="text-[#3C8D0D] font-bold">
                     {item.price.toFixed(2)}€
                   </p>
+                  <p className="text-gray-600">
+                    {new Date(item.selectedDate).toLocaleDateString("fr-FR")} à{" "}
+                    {item.timeSlot.startTime}
+                  </p>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.cartId)}
                   className="text-red-500 hover:text-red-700 ml-4"
                 >
                   Supprimer
@@ -70,7 +74,7 @@ export default function CartPage() {
             ))}
           </div>
 
-          <div className="lg:col-span-1">
+          <div key="cart-summary" className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-2xl font-semibold text-[#002A5C] mb-6">
                 Récapitulatif
@@ -83,7 +87,7 @@ export default function CartPage() {
                 href="/booking"
                 className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                Procéder à la réservation
+                Procéder au paiement
               </Link>
               <button
                 onClick={clearCart}

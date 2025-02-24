@@ -1,15 +1,22 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { toast } from "react-hot-toast";
 
-export default function AddToCartButton({ offer, timeSlot }) {
+export default function AddToCartButton({ offer, selectedDate, timeSlot }) {
   const { addToCart } = useCart();
 
   const handleClick = (e) => {
     e.preventDefault();
+    if (!selectedDate || !timeSlot) {
+      toast.error("Veuillez sélectionner une date et un créneau horaire");
+      return;
+    }
+
     addToCart({
       ...offer,
-      timeSlot: timeSlot,
+      selectedDate,
+      timeSlot,
     });
   };
 
