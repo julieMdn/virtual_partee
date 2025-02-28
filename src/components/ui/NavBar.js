@@ -1,86 +1,87 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { FaShoppingCart } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
+import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 
-const NavBar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { getCartCount } = useCart();
+export default function NavBar() {
+  const { cart } = useCart();
+  const { user, logout } = useAuth();
 
   return (
-    <nav className="fixed w-full bg-[#F9F9F9] border-b border-[#F5E1C0] z-50">
-      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between py-4 px-2">
-        <div className="flex items-center space-x-4">
-          <Link href="/" className="text-[#002A5C] text-xl font-bold mr-10">
-            Virtual Partee
-          </Link>
-          <Link
-            href="/offres"
-            className="hidden lg:inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200"
-          >
-            Réserver
-          </Link>
-        </div>
-
-        {/* Bouton hamburger */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="lg:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 p-1 hover:bg-[#F5E1C0] rounded-md transition-colors duration-200"
-          aria-label="Menu"
-        >
-          <span className="w-6 h-0.5 bg-[#002A5C] rounded-full transition-all duration-200"></span>
-          <span className="w-6 h-0.5 bg-[#002A5C] rounded-full transition-all duration-200"></span>
-          <span className="w-6 h-0.5 bg-[#002A5C] rounded-full transition-all duration-200"></span>
-        </button>
-
-        {/* Navigation links */}
-        <div
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } w-full lg:flex lg:w-auto lg:items-center`}
-        >
-          <div className="flex flex-col lg:flex-row items-center">
+    <nav className="fixed w-full bg-white shadow-md z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center space-x-4">
+            <Link href="/" className="text-2xl font-bold text-[#002A5C]">
+              Virtual Partee
+            </Link>
             <Link
               href="/offres"
-              className="inline-block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors duration-200 lg:hidden"
+              className="px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors"
             >
               Réserver
             </Link>
+          </div>
+
+          <div className="flex items-center space-x-6">
             <Link
               href="#"
-              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
+              className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Le concept
             </Link>
+
             <Link
               href="/offres"
-              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
+              className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Nos offres
             </Link>
-            <Link
-              href="/contact"
-              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/login"
-              className="text-[#002A5C] py-2 lg:py-0 lg:mx-2 hover:text-[#3C8D0D]"
-            >
-              Se connecter
-            </Link>
+
+            {user ? (
+              <div className="relative group">
+                <div className="flex items-center space-x-2 cursor-pointer">
+                  <FaUserCircle className="text-2xl text-[#FF8C42]" />
+                  <span className="text-[#002A5C] group-hover:text-[#FF8C42] transition-colors">
+                    {user.firstName || "Mon compte"}
+                  </span>
+                </div>
+                <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                  <Link
+                    href="/account"
+                    className="block px-4 py-2 text-[#002A5C] hover:text-[#FF8C42] hover:bg-gray-50"
+                  >
+                    Mon profil
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50"
+                  >
+                    Se déconnecter
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center space-x-2 text-[#002A5C] hover:text-[#FF8C42] transition-colors"
+              >
+                <FaUserCircle className="text-2xl" />
+                <span>Se connecter</span>
+              </Link>
+            )}
+
             <Link
               href="/cart"
-              className="text-[#002A5C] py-2 lg:py-0 lg:ml-2 hover:text-[#3C8D0D] relative"
+              className="relative text-[#002A5C] hover:text-[#FF8C42] transition-colors"
               aria-label="Panier"
             >
               <FaShoppingCart className="text-xl" />
-              {getCartCount() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#3C8D0D] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {getCartCount()}
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#FF8C42] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cart.length}
                 </span>
               )}
             </Link>
@@ -89,6 +90,4 @@ const NavBar = () => {
       </div>
     </nav>
   );
-};
-
-export default NavBar;
+}

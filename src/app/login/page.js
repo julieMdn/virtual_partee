@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Cookies from "js-cookie";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
-  const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,27 +26,9 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Stockage du token dans les cookies
-        Cookies.set("token", data.data.token, { expires: 1 }); // Expire dans 1 jour
-        localStorage.setItem("user", JSON.stringify(data.data.user));
-
-        // Redirection vers la page du compte
-        await router.push("/account");
-      } else {
-        setError(
-          data.message || "Une erreur est survenue lors de la connexion"
-        );
+      const result = await login(formData.email, formData.password);
+      if (!result.success) {
+        setError(result.error);
       }
     } catch (error) {
       setError("Une erreur est survenue lors de la connexion");
