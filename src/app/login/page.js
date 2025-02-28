@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const router = useRouter();
@@ -37,11 +38,11 @@ export default function Login() {
       const data = await response.json();
 
       if (data.success) {
-        // Stockage du token et des informations utilisateur
-        localStorage.setItem("token", data.data.token);
+        // Stockage du token dans les cookies
+        Cookies.set("token", data.data.token, { expires: 1 }); // Expire dans 1 jour
         localStorage.setItem("user", JSON.stringify(data.data.user));
 
-        // Redirection vers la page du compte au lieu du dashboard
+        // Redirection vers la page du compte
         await router.push("/account");
       } else {
         setError(
