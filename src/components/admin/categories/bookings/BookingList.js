@@ -10,10 +10,28 @@ const BookingList = () => (
   <List>
     <Datagrid>
       <DateField
-        source="date"
-        label="Date de réservation"
+        source="createdAt"
+        label="Date de création"
         locales="fr-FR"
-        options={{ year: "numeric", month: "long", day: "numeric" }}
+        options={{
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }}
+      />
+      <DateField
+        source="eventDate"
+        label="Date de l'événement"
+        locales="fr-FR"
+        options={{
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }}
       />
       <TextField source="status" label="Statut" />
       <ReferenceField source="userId" reference="User" label="Utilisateur">

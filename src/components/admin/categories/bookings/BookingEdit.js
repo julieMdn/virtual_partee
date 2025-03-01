@@ -10,7 +10,7 @@ import {
 const BookingEdit = () => (
   <Edit>
     <SimpleForm>
-      <DateInput source="date" label="Date de réservation" />
+      <DateInput source="eventDate" label="Date de l'événement" />
       <TextInput source="status" label="Statut" />
       <ReferenceInput source="userId" reference="User" label="Utilisateur">
         <AutocompleteInput optionText="username" />

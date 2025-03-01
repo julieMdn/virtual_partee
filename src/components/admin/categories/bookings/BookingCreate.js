@@ -10,6 +10,7 @@ import {
 const BookingCreate = () => (
   <Create>
     <SimpleForm>
+      <DateInput source="eventDate" label="Date de l'événement" />
       <TextInput source="status" label="Statut" defaultValue="pending" />
       <ReferenceInput source="userId" reference="User" label="Utilisateur">
         <AutocompleteInput optionText="username" />
