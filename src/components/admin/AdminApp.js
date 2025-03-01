@@ -34,6 +34,7 @@ import CourseCreate from "./categories/courses/CourseCreate";
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
+import { useState, useEffect } from "react";
 
 const adminDataProvider = dataProvider("/api");
 
@@ -101,6 +102,16 @@ const MyAppBar = () => (
 );
 
 const AdminApp = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // ou un loader/placeholder
+  }
+
   return (
     <Admin
       dataProvider={adminDataProvider}
