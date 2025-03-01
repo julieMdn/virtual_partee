@@ -88,7 +88,7 @@ export async function POST(request) {
           },
           data: {
             status: "confirmed",
-            payment_id: payment.payment_id,
+            paymentId: payment.id,
             // La date de création est automatiquement gérée par @default(now())
           },
         });
