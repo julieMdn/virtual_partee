@@ -13,7 +13,13 @@ const OfferCreate = () => (
       />
       <NumberInput source="price" label="Prix" min={0} step={0.01} required />
       <TextInput source="picture" label="URL de l'image" required />
-      <NumberInput source="duration" label="Durée (minutes)" min={0} required />
+      <NumberInput
+        source="duration"
+        label="Durée (en minutes)"
+        min={30}
+        max={240}
+        defaultValue={60}
+      />
     </SimpleForm>
   </Create>
 );

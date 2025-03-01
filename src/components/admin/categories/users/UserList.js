@@ -17,6 +17,14 @@ const UserList = () => (
       <EmailField source="email" label="e-mail" />
       <TextField source="lastName" label="Nom" />
       <TextField source="firstName" label="Prénom" />
+      <FunctionField
+        label="Score Total"
+        render={(record) => {
+          const totalScore =
+            record.scores?.reduce((sum, score) => sum + score.value, 0) || 0;
+          return `${totalScore} points`;
+        }}
+      />
       <DateField
         source="birthday"
         locales="fr-FR"

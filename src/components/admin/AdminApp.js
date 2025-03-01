@@ -36,7 +36,32 @@ import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
 import { useState, useEffect } from "react";
 
-const adminDataProvider = dataProvider("/api");
+const adminDataProvider = dataProvider("/api", {
+  include: {
+    Booking: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+      offer: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      payment: {
+        select: {
+          id: true,
+          amount: true,
+          status: true,
+        },
+      },
+    },
+  },
+});
 
 const i18nProvider = polyglotI18nProvider((locale) => {
   if (locale === "fr") {
@@ -109,7 +134,7 @@ const AdminApp = () => {
   }, []);
 
   if (!isClient) {
-    return null; // ou un loader/placeholder
+    return null;
   }
 
   return (
@@ -138,19 +163,8 @@ const AdminApp = () => {
         edit={BookingEdit}
         create={BookingCreate}
       />
-      <Resource
-        name="Score"
-        list={ScoreList}
-        edit={ScoreEdit}
-        create={ScoreCreate}
-      />
-      <Resource
-        name="Course"
-        list={CourseList}
-        edit={CourseEdit}
-        create={CourseCreate}
-        recordRepresentation="course_title"
-      />
+      <Resource name="Score" />
+      <Resource name="Course" recordRepresentation="title" />
     </Admin>
   );
 };

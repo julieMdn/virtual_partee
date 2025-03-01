@@ -45,24 +45,31 @@ const BookingForm = () => {
 
   const fetchTimeSlots = async () => {
     try {
-      // Vérifier si c'est un dimanche
       if (selectedDate.getDay() === 0) {
         setTimeSlots([]);
         return;
       }
 
+      console.log(
+        "Fetching timeslots for date:",
+        selectedDate,
+        "and offerId:",
+        offerId
+      );
+
       const response = await fetch(
-        `/api/timeslots?date=${selectedDate.toISOString()}`
+        `/api/timeslots?date=${selectedDate.toISOString()}&offerId=${offerId}`
       );
       const data = await response.json();
+      console.log("Response from timeslots API:", data);
 
       if (data.success) {
-        // Filtrer les créneaux pour s'assurer qu'ils sont entre 9h et 19h
+        const now = new Date();
         setTimeSlots(
           data.data
             .filter((slot) => {
-              const hour = new Date(slot.startTime).getHours();
-              return hour >= 9 && hour <= 19;
+              const slotTime = new Date(slot.startTime);
+              return slotTime > now;
             })
             .map((slot) => ({
               id: new Date(slot.startTime).toISOString(),
@@ -74,9 +81,12 @@ const BookingForm = () => {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
+              fullStartTime: new Date(slot.startTime),
+              fullEndTime: new Date(slot.endTime),
             }))
         );
       } else {
+        console.error("Error from API:", data.error);
         setTimeSlots([]);
       }
     } catch (error) {
@@ -161,7 +171,8 @@ const BookingForm = () => {
                     : "bg-gray-100 hover:bg-gray-200 text-[#002A5C]"
                 }`}
               >
-                {slot.startTime}
+                <div>{slot.startTime}</div>
+                <div className="text-sm">à {slot.endTime}</div>
               </button>
             ))}
           </div>
