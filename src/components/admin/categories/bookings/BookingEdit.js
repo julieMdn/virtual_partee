@@ -1,7 +1,7 @@
 import {
   Edit,
   SimpleForm,
-  DateInput,
+  DateTimeInput,
   TextInput,
   ReferenceInput,
   AutocompleteInput,
@@ -10,30 +10,21 @@ import {
 const BookingEdit = () => (
   <Edit>
     <SimpleForm>
-      <DateInput source="eventDate" label="Date de l'événement" />
-      <TextInput source="status" label="Statut" />
-      <ReferenceInput source="userId" reference="User" label="Utilisateur">
-        <AutocompleteInput optionText="username" />
-      </ReferenceInput>
-      <ReferenceInput source="offerId" reference="Offer" label="Offre">
-        <AutocompleteInput optionText="title" />
-      </ReferenceInput>
-      <ReferenceInput
-        source="timeSlotId"
-        reference="TimeSlot"
-        label="Créneau horaire"
-      >
+      <ReferenceInput source="userId" reference="User" label="Client">
         <AutocompleteInput
-          optionText={(record) =>
-            `${new Date(record.startTime).toLocaleString("fr-FR")} - ${new Date(
-              record.endTime
-            ).toLocaleString("fr-FR")}`
-          }
+          optionText={(record) => `${record.firstName} ${record.lastName}`}
         />
       </ReferenceInput>
-      <ReferenceInput source="paymentId" reference="Payment" label="Paiement">
-        <AutocompleteInput optionText="id" />
+
+      <ReferenceInput source="offerId" reference="Offer" label="Prestation">
+        <AutocompleteInput optionText="title" />
       </ReferenceInput>
+
+      <DateTimeInput source="eventDate" label="Date de l'événement" />
+
+      <TextInput source="status" label="Statut" />
+
+      <TextInput source="stripeSessionId" label="ID Stripe" />
     </SimpleForm>
   </Edit>
 );
