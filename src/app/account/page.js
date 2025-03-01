@@ -1,34 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Account() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
+  const { user, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
-  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  useEffect(() => {
-    // Vérification de l'authentification
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-
-    if (!storedUser || !token) {
-      router.push("/login");
-      return;
-    }
-
-    setUser(JSON.parse(storedUser));
-    setIsLoading(false);
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#F9F9F9] pt-28 flex items-center justify-center">
         <div className="text-[#002A5C]">Chargement...</div>
@@ -37,6 +17,7 @@ export default function Account() {
   }
 
   if (!user) {
+    router.push("/login");
     return null;
   }
 
@@ -47,7 +28,7 @@ export default function Account() {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-[#002A5C]">Mon compte</h1>
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Se déconnecter

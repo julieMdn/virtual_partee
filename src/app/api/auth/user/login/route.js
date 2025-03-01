@@ -8,9 +8,11 @@ const prisma = new PrismaClient();
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
+    console.log("Tentative de connexion pour:", email);
 
     // Vérification des champs requis
     if (!email || !password) {
+      console.log("Email ou mot de passe manquant");
       return NextResponse.json(
         {
           success: false,
@@ -47,8 +49,14 @@ export async function POST(request) {
       },
     });
 
+    console.log("Utilisateur trouvé:", user ? "Oui" : "Non");
+    if (user) {
+      console.log("Role de l'utilisateur:", user.role);
+    }
+
     // Vérification si l'utilisateur existe
     if (!user) {
+      console.log("Utilisateur non trouvé ou rôle incorrect");
       return NextResponse.json(
         {
           success: false,
@@ -60,8 +68,10 @@ export async function POST(request) {
 
     // Vérification du mot de passe
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log("Mot de passe valide:", isPasswordValid);
 
     if (!isPasswordValid) {
+      console.log("Mot de passe invalide");
       return NextResponse.json(
         {
           success: false,
@@ -81,6 +91,8 @@ export async function POST(request) {
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
+
+    console.log("Token généré avec succès");
 
     // Retourne la réponse avec le token et les informations de l'utilisateur
     return NextResponse.json({

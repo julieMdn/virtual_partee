@@ -60,8 +60,10 @@ model TimeSlot {
 
 model Booking {
   id Int @id @default(autoincrement()) @map("booking_id")
-  date DateTime @default(now()) @map("booking_date")
+  createdAt DateTime @default(now()) @map("created_at") 
+  eventDate DateTime @map("event_date") 
   status String @default("pending") @map("booking_status")
+  stripeSessionId String? @map("stripe_session_id")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int @map("user_id")
   @@index([userId])
@@ -112,5 +114,4 @@ model OpeningHours {
   afternoonStart DateTime
   afternoonEnd   DateTime
 }
-
 

@@ -46,4 +46,10 @@ async function seedOffers() {
   }
 }
 
+// Exécute la fonction de seed
+seedOffers().catch((error) => {
+  console.error("Erreur lors du seeding des offres:", error);
+  process.exit(1);
+});
+
 module.exports = seedOffers;

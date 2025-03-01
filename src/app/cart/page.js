@@ -3,11 +3,82 @@
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import Cookies from "js-cookie";
+
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    try {
+      console.log("Début du processus de paiement");
+      // Récupérer le token soit des cookies soit du localStorage
+      const token = Cookies.get("token") || localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Vous devez être connecté pour effectuer une réservation", {
+          duration: 4000,
+          action: {
+            label: "Se connecter",
+            onClick: () => router.push("/login"),
+          },
+        });
+        return;
+      }
+
+      console.log("Envoi de la requête avec les articles:", cart);
+      const response = await fetch("/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          cartItems: cart,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Réponse reçue:", data);
+
+      if (response.status === 401) {
+        toast.error("Vous devez être connecté pour effectuer une réservation", {
+          duration: 4000,
+          action: {
+            label: "Se connecter",
+            onClick: () => router.push("/login"),
+          },
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+
+      if (data.url) {
+        clearCart();
+        window.location.href = data.url;
+      } else {
+        throw new Error("URL de paiement manquante");
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation du paiement:", error);
+      toast.error(
+        error.message ||
+          "Une erreur est survenue lors de la préparation du paiement"
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (cart.length === 0) {
     return (
@@ -58,6 +129,7 @@ export default function CartPage() {
           <button
             onClick={() => removeFromCart(item.cartId)}
             className="text-red-500 hover:text-red-700 ml-4"
+            disabled={isProcessing}
           >
             Supprimer
           </button>
@@ -73,15 +145,17 @@ export default function CartPage() {
           <span>Total</span>
           <span className="font-bold">{total.toFixed(2)}€</span>
         </div>
-        <Link
-          href="/"
-          className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors"
+        <button
+          onClick={handlePayment}
+          disabled={isProcessing}
+          className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Procéder au paiement
-        </Link>
+          {isProcessing ? "Traitement en cours..." : "Procéder au paiement"}
+        </button>
         <button
           onClick={clearCart}
-          className="block w-full mt-4 text-red-500 hover:text-red-700 text-center"
+          disabled={isProcessing}
+          className="block w-full mt-4 text-red-500 hover:text-red-700 text-center disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Vider le panier
         </button>
