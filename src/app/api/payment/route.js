@@ -114,7 +114,7 @@ export async function POST(request) {
       // Créer la réservation
       const booking = await prisma.booking.create({
         data: {
-          date: startDateTime, // Utiliser la même date/heure que le créneau
+          eventDate: startDateTime, // Utiliser la date/heure de l'événement
           status: "pending",
           stripeSessionId: stripeSession.id,
           userId: decodedUserId,
