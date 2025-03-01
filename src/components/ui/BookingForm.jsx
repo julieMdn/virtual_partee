@@ -57,12 +57,15 @@ const BookingForm = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Filtrer les créneaux pour s'assurer qu'ils sont entre 9h et 19h
+        const now = new Date();
         setTimeSlots(
           data.data
             .filter((slot) => {
-              const hour = new Date(slot.startTime).getHours();
-              return hour >= 9 && hour <= 19;
+              const slotTime = new Date(slot.startTime);
+              const hour = slotTime.getHours();
+
+              // Vérifier si le créneau est entre 9h et 19h ET n'est pas déjà passé
+              return hour >= 9 && hour <= 19 && slotTime > now;
             })
             .map((slot) => ({
               id: new Date(slot.startTime).toISOString(),

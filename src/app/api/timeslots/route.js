@@ -7,6 +7,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const date = new Date(searchParams.get("date"));
+    const now = new Date();
 
     // Convertir le jour en anglais pour correspondre à la base de données
     const days = {
@@ -47,15 +48,21 @@ export async function GET(request) {
 
     // 3. Générer tous les créneaux disponibles
     const availableSlots = [];
+    const isToday = date.toDateString() === now.toDateString();
 
-    // Créneaux du matin (en commençant à 9h)
+    // Créneaux du matin
     for (
-      let h = openingHours.morningStart.getHours(); // Devrait être 9h
-      h < openingHours.morningEnd.getHours(); // Devrait être 12h
+      let h = openingHours.morningStart.getHours();
+      h < openingHours.morningEnd.getHours();
       h++
     ) {
       const slotStart = new Date(date);
       slotStart.setHours(h, 0, 0, 0);
+
+      // Vérifier si le créneau n'est pas déjà passé pour aujourd'hui
+      if (isToday && slotStart <= now) {
+        continue; // Sauter ce créneau
+      }
 
       // Vérifier si le créneau n'est pas déjà réservé
       const isReserved = unavailableSlots.some(
@@ -70,14 +77,19 @@ export async function GET(request) {
       }
     }
 
-    // Créneaux de l'après-midi (jusqu'à 19h max)
+    // Créneaux de l'après-midi
     for (
-      let h = openingHours.afternoonStart.getHours(); // Devrait être 14h
-      h < openingHours.afternoonEnd.getHours() - 1; // Devrait être 19h (pas 20h)
+      let h = openingHours.afternoonStart.getHours();
+      h < openingHours.afternoonEnd.getHours();
       h++
     ) {
       const slotStart = new Date(date);
       slotStart.setHours(h, 0, 0, 0);
+
+      // Vérifier si le créneau n'est pas déjà passé pour aujourd'hui
+      if (isToday && slotStart <= now) {
+        continue; // Sauter ce créneau
+      }
 
       // Vérifier si le créneau n'est pas déjà réservé
       const isReserved = unavailableSlots.some(
