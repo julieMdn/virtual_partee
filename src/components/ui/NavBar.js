@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
@@ -8,6 +9,12 @@ import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 export default function NavBar() {
   const { cart } = useCart();
   const { user, logout } = useAuth();
+  const pathname = usePathname();
+
+  // Ne pas afficher la navbar sur les pages admin
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <nav className="fixed w-full bg-white shadow-md z-50">
