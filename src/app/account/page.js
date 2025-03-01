@@ -2,12 +2,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Account() {
   const { user, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,13 +53,13 @@ export default function Account() {
   const getStatusColor = (status) => {
     switch (status) {
       case "confirmed":
-        return "text-green-600";
+        return "bg-green-100 text-green-800";
       case "pending":
-        return "text-yellow-600";
+        return "bg-yellow-100 text-yellow-800";
       case "cancelled":
-        return "text-red-600";
+        return "bg-red-100 text-red-800";
       default:
-        return "text-gray-600";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -68,6 +73,58 @@ export default function Account() {
         return "Annulée";
       default:
         return status;
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR",
+    }).format(price);
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Les nouveaux mots de passe ne correspondent pas");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error(
+        "Le nouveau mot de passe doit contenir au moins 8 caractères"
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/user/password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Mot de passe mis à jour avec succès");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(data.error || "Erreur lors du changement de mot de passe");
+      }
+    } catch (error) {
+      toast.error("Erreur lors du changement de mot de passe");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -192,7 +249,7 @@ export default function Account() {
 
               {activeTab === "reservations" && (
                 <div>
-                  <h3 className="text-lg font-semibold text-[#002A5C] mb-4">
+                  <h3 className="text-lg font-semibold text-[#002A5C] mb-6">
                     Historique des réservations
                   </h3>
                   {loadingBookings ? (
@@ -202,52 +259,75 @@ export default function Account() {
                       </div>
                     </div>
                   ) : bookings.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       {bookings.map((booking) => (
                         <div
                           key={booking.id}
-                          className="border border-[#F5E1C0] rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="bg-white border border-[#F5E1C0] rounded-lg p-6 hover:shadow-lg transition-shadow"
                         >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-semibold text-[#002A5C]">
-                                {booking.offer.title}
-                              </h4>
-                              <p className="text-sm text-gray-600">
-                                Date :{" "}
-                                {new Date(booking.eventDate).toLocaleDateString(
-                                  "fr-FR"
-                                )}{" "}
-                                à{" "}
-                                {new Date(booking.eventDate).toLocaleTimeString(
-                                  "fr-FR",
-                                  {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
+                          <div className="flex flex-col md:flex-row justify-between gap-4">
+                            <div className="flex-grow space-y-3">
+                              <div className="flex items-start justify-between">
+                                <h4 className="text-xl font-semibold text-[#002A5C]">
+                                  {booking.offer.title}
+                                </h4>
+                                <span
+                                  className={`px-4 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                                    booking.status
+                                  )}`}
+                                >
+                                  {getStatusText(booking.status)}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <p className="text-sm text-gray-600">
+                                    <span className="font-medium">Date :</span>{" "}
+                                    {new Date(
+                                      booking.eventDate
+                                    ).toLocaleDateString("fr-FR")}
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    <span className="font-medium">Heure :</span>{" "}
+                                    {new Date(
+                                      booking.eventDate
+                                    ).toLocaleTimeString("fr-FR", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </p>
+                                </div>
+
+                                {booking.payment && (
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-gray-600">
+                                      <span className="font-medium">
+                                        Montant HT :
+                                      </span>{" "}
+                                      {formatPrice(booking.payment.amount)}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      <span className="font-medium">TVA :</span>{" "}
+                                      {formatPrice(booking.payment.tvaAmount)}
+                                    </p>
+                                    <p className="text-sm font-medium text-[#002A5C]">
+                                      Total TTC :{" "}
+                                      {formatPrice(
+                                        booking.payment.amount +
+                                          booking.payment.tvaAmount
+                                      )}
+                                    </p>
+                                  </div>
                                 )}
-                              </p>
-                              {booking.payment && (
-                                <p className="text-sm text-gray-600">
-                                  Montant : {booking.payment.amount.toFixed(2)}€
-                                  HT (TVA :{" "}
-                                  {booking.payment.tvaAmount.toFixed(2)}€)
-                                </p>
-                              )}
+                              </div>
                             </div>
-                            <span
-                              className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
-                                booking.status
-                              )}`}
-                            >
-                              {getStatusText(booking.status)}
-                            </span>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-[#002A5C]/80">
+                    <p className="text-[#002A5C]/80 text-center py-8">
                       Vous n'avez pas encore de réservation.
                     </p>
                   )}
@@ -259,21 +339,62 @@ export default function Account() {
                   <h3 className="text-lg font-semibold text-[#002A5C] mb-4">
                     Paramètres du compte
                   </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[#002A5C] font-medium mb-2">
-                        Changer le mot de passe
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="Nouveau mot de passe"
-                        className="w-full px-4 py-2 border border-[#F5E1C0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C8D0D] focus:border-transparent"
-                      />
+                  <form onSubmit={handlePasswordChange} className="space-y-4">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[#002A5C] font-medium mb-2">
+                          Mot de passe actuel
+                        </label>
+                        <input
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Votre mot de passe actuel"
+                          className="w-full px-4 py-2 border border-[#F5E1C0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C8D0D] focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[#002A5C] font-medium mb-2">
+                          Nouveau mot de passe
+                        </label>
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Votre nouveau mot de passe"
+                          className="w-full px-4 py-2 border border-[#F5E1C0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C8D0D] focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[#002A5C] font-medium mb-2">
+                          Confirmer le nouveau mot de passe
+                        </label>
+                        <input
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirmez votre nouveau mot de passe"
+                          className="w-full px-4 py-2 border border-[#F5E1C0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C8D0D] focus:border-transparent"
+                          required
+                        />
+                      </div>
                     </div>
-                    <button className="px-4 py-2 bg-[#3C8D0D] text-white rounded-lg hover:bg-[#327A0B] transition-colors">
-                      Mettre à jour
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-2 bg-[#3C8D0D] text-white rounded-lg transition-colors ${
+                        isSubmitting
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-[#327A0B]"
+                      }`}
+                    >
+                      {isSubmitting
+                        ? "Mise à jour..."
+                        : "Mettre à jour le mot de passe"}
                     </button>
-                  </div>
+                  </form>
                 </div>
               )}
             </div>
