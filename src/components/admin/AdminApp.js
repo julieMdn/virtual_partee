@@ -109,7 +109,7 @@ const AdminApp = () => {
   }, []);
 
   if (!isClient) {
-    return null; // ou un loader/placeholder
+    return null;
   }
 
   return (
@@ -138,19 +138,8 @@ const AdminApp = () => {
         edit={BookingEdit}
         create={BookingCreate}
       />
-      <Resource
-        name="Score"
-        list={ScoreList}
-        edit={ScoreEdit}
-        create={ScoreCreate}
-      />
-      <Resource
-        name="Course"
-        list={CourseList}
-        edit={CourseEdit}
-        create={CourseCreate}
-        recordRepresentation="course_title"
-      />
+      <Resource name="Score" />
+      <Resource name="Course" recordRepresentation="title" />
     </Admin>
   );
 };
