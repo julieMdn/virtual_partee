@@ -1,12 +1,36 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Account() {
   const { user, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (activeTab === "reservations") {
+        setLoadingBookings(true);
+        try {
+          const response = await fetch("/api/user/bookings");
+          if (response.ok) {
+            const data = await response.json();
+            setBookings(data);
+          } else {
+            console.error("Erreur lors de la récupération des réservations");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+        }
+        setLoadingBookings(false);
+      }
+    };
+
+    fetchBookings();
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -20,6 +44,32 @@ export default function Account() {
     router.push("/login");
     return null;
   }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "confirmed":
+        return "text-green-600";
+      case "pending":
+        return "text-yellow-600";
+      case "cancelled":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmée";
+      case "pending":
+        return "En attente";
+      case "cancelled":
+        return "Annulée";
+      default:
+        return status;
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#F9F9F9] pt-28">
@@ -145,9 +195,62 @@ export default function Account() {
                   <h3 className="text-lg font-semibold text-[#002A5C] mb-4">
                     Historique des réservations
                   </h3>
-                  <p className="text-[#002A5C]/80">
-                    Vous n'avez pas encore de réservation.
-                  </p>
+                  {loadingBookings ? (
+                    <div className="text-center py-4">
+                      <div className="text-[#002A5C]">
+                        Chargement des réservations...
+                      </div>
+                    </div>
+                  ) : bookings.length > 0 ? (
+                    <div className="space-y-4">
+                      {bookings.map((booking) => (
+                        <div
+                          key={booking.id}
+                          className="border border-[#F5E1C0] rounded-lg p-4 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-semibold text-[#002A5C]">
+                                {booking.offer.title}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                Date :{" "}
+                                {new Date(booking.eventDate).toLocaleDateString(
+                                  "fr-FR"
+                                )}{" "}
+                                à{" "}
+                                {new Date(booking.eventDate).toLocaleTimeString(
+                                  "fr-FR",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </p>
+                              {booking.payment && (
+                                <p className="text-sm text-gray-600">
+                                  Montant : {booking.payment.amount.toFixed(2)}€
+                                  HT (TVA :{" "}
+                                  {booking.payment.tvaAmount.toFixed(2)}€)
+                                </p>
+                              )}
+                            </div>
+                            <span
+                              className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
+                                booking.status
+                              )}`}
+                            >
+                              {getStatusText(booking.status)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[#002A5C]/80">
+                      Vous n'avez pas encore de réservation.
+                    </p>
+                  )}
                 </div>
               )}
 
