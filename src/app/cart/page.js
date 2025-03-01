@@ -18,6 +18,7 @@ export default function CartPage() {
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
+      console.log("Début du processus de paiement");
       // Récupérer le token soit des cookies soit du localStorage
       const token = Cookies.get("token") || localStorage.getItem("token");
 
@@ -32,6 +33,7 @@ export default function CartPage() {
         return;
       }
 
+      console.log("Envoi de la requête avec les articles:", cart);
       const response = await fetch("/api/payment", {
         method: "POST",
         headers: {
@@ -39,12 +41,12 @@ export default function CartPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          amount: total,
           cartItems: cart,
         }),
       });
 
       const data = await response.json();
+      console.log("Réponse reçue:", data);
 
       if (response.status === 401) {
         toast.error("Vous devez être connecté pour effectuer une réservation", {
@@ -57,11 +59,15 @@ export default function CartPage() {
         return;
       }
 
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+
       if (data.url) {
         clearCart();
         window.location.href = data.url;
       } else {
-        throw new Error(data.error || "Une erreur est survenue");
+        throw new Error("URL de paiement manquante");
       }
     } catch (error) {
       console.error("Erreur lors de l'initialisation du paiement:", error);
