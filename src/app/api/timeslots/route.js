@@ -7,7 +7,23 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const date = new Date(searchParams.get("date"));
+    const offerId = searchParams.get("offerId");
     const now = new Date();
+
+    // Récupérer l'offre pour connaître sa durée
+    const offer = await prisma.offer.findUnique({
+      where: { id: parseInt(offerId) },
+      select: { duration: true },
+    });
+
+    if (!offer) {
+      return NextResponse.json({
+        success: false,
+        error: "Offre non trouvée",
+      });
+    }
+
+    const durationInHours = offer.duration / 60; // Convertir les minutes en heures
 
     // Convertir le jour en anglais pour correspondre à la base de données
     const days = {
@@ -53,26 +69,34 @@ export async function GET(request) {
     // Créneaux du matin
     for (
       let h = openingHours.morningStart.getHours();
-      h < openingHours.morningEnd.getHours();
+      h < openingHours.morningEnd.getHours() - durationInHours + 1;
       h++
     ) {
       const slotStart = new Date(date);
       slotStart.setHours(h, 0, 0, 0);
 
-      // Vérifier si le créneau n'est pas déjà passé pour aujourd'hui
       if (isToday && slotStart <= now) {
-        continue; // Sauter ce créneau
+        continue;
       }
 
-      // Vérifier si le créneau n'est pas déjà réservé
-      const isReserved = unavailableSlots.some(
-        (slot) => slot.startTime.getHours() === h
-      );
+      const slotEnd = new Date(slotStart);
+      slotEnd.setHours(h + durationInHours);
+
+      // Vérifier si le créneau complet est disponible
+      const isReserved = await prisma.timeSlot.findFirst({
+        where: {
+          date: {
+            gte: slotStart,
+            lt: slotEnd,
+          },
+          isAvailable: false,
+        },
+      });
 
       if (!isReserved) {
         availableSlots.push({
           startTime: slotStart.toISOString(),
-          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+          endTime: slotEnd.toISOString(),
         });
       }
     }
@@ -80,29 +104,42 @@ export async function GET(request) {
     // Créneaux de l'après-midi
     for (
       let h = openingHours.afternoonStart.getHours();
-      h < openingHours.afternoonEnd.getHours();
+      h < openingHours.afternoonEnd.getHours() - durationInHours + 1;
       h++
     ) {
       const slotStart = new Date(date);
       slotStart.setHours(h, 0, 0, 0);
 
-      // Vérifier si le créneau n'est pas déjà passé pour aujourd'hui
       if (isToday && slotStart <= now) {
-        continue; // Sauter ce créneau
+        continue;
       }
 
-      // Vérifier si le créneau n'est pas déjà réservé
-      const isReserved = unavailableSlots.some(
-        (slot) => slot.startTime.getHours() === h
-      );
+      const slotEnd = new Date(slotStart);
+      slotEnd.setHours(h + durationInHours);
+
+      // Vérifier si le créneau complet est disponible
+      const isReserved = await prisma.timeSlot.findFirst({
+        where: {
+          date: {
+            gte: slotStart,
+            lt: slotEnd,
+          },
+          isAvailable: false,
+        },
+      });
 
       if (!isReserved) {
         availableSlots.push({
           startTime: slotStart.toISOString(),
-          endTime: new Date(slotStart.setHours(h + 1)).toISOString(),
+          endTime: slotEnd.toISOString(),
         });
       }
     }
+
+    console.log("Received request for offerId:", offerId);
+    console.log("Offer found:", offer);
+    console.log("Duration in hours:", durationInHours);
+    console.log("Generated slots:", availableSlots);
 
     return NextResponse.json({
       success: true,
