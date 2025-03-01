@@ -50,17 +50,15 @@ const adminDataProvider = dataProvider("/api", {
         select: {
           id: true,
           title: true,
-          duration: true,
-          price: true,
         },
       },
       payment: {
         select: {
+          id: true,
           amount: true,
           status: true,
         },
       },
-      timeSlot: true,
     },
   },
 });

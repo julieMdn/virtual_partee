@@ -44,14 +44,13 @@ const BookingList = () => (
         }}
       />
 
-      <FunctionField
-        label="Montant"
-        render={(record) =>
-          record.payment?.amount
-            ? `${record.payment.amount.toFixed(2)} €`
-            : "Non payé"
-        }
-      />
+      <ReferenceField source="paymentId" reference="Payment" label="Montant">
+        <FunctionField
+          render={(record) =>
+            record?.amount ? `${record.amount.toFixed(2)} €` : "Non payé"
+          }
+        />
+      </ReferenceField>
 
       <TextField source="stripeSessionId" label="ID Stripe" />
 
