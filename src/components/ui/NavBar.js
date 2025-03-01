@@ -47,6 +47,13 @@ export default function NavBar() {
               Nos offres
             </Link>
 
+            <Link
+              href="/contact"
+              className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
+            >
+              Contactez-nous
+            </Link>
+
             {user ? (
               <div className="relative group">
                 <div className="flex items-center space-x-2 cursor-pointer">
