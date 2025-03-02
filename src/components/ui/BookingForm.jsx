@@ -39,8 +39,7 @@ const BookingForm = () => {
 
   // Debug log au montage du composant
   useEffect(() => {
-    console.log("Current cart:", cart);
-    console.log("OfferId from URL:", offerId);
+    // Les logs de debug ont été supprimés
   }, [cart, offerId]);
 
   const fetchTimeSlots = async () => {
@@ -50,18 +49,10 @@ const BookingForm = () => {
         return;
       }
 
-      console.log(
-        "Fetching timeslots for date:",
-        selectedDate,
-        "and offerId:",
-        offerId
-      );
-
       const response = await fetch(
         `/api/timeslots?date=${selectedDate.toISOString()}&offerId=${offerId}`
       );
       const data = await response.json();
-      console.log("Response from timeslots API:", data);
 
       if (data.success) {
         const now = new Date();
@@ -86,11 +77,9 @@ const BookingForm = () => {
             }))
         );
       } else {
-        console.error("Error from API:", data.error);
         setTimeSlots([]);
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération des créneaux:", error);
       toast.error("Erreur lors de la récupération des créneaux");
     }
   };
