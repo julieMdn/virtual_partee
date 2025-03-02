@@ -1,7 +1,7 @@
 describe("Page d'accueil", () => {
   beforeEach(() => {
     // Visiter la page d'accueil avant chaque test
-    cy.visit("http://localhost:3000");
+    cy.visit("/");
   });
 
   it("devrait charger la page d'accueil", () => {
