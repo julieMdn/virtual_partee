@@ -7,14 +7,28 @@ import {
   FunctionField,
 } from "react-admin";
 
-const formatDateTime = (date) => {
-  return date.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
+const formatTimeSlot = (startTime, endTime) => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  // Format de la date (une seule fois)
+  const date = start.toLocaleDateString("fr-FR", {
     year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // Format des heures
+  const startHour = start.toLocaleTimeString("fr-FR", {
     hour: "2-digit",
     minute: "2-digit",
   });
+  const endHour = end.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `${date} de ${startHour} à ${endHour}`;
 };
 
 const BookingList = () => (
@@ -30,19 +44,18 @@ const BookingList = () => (
         <TextField source="title" />
       </ReferenceField>
 
-      <DateField
-        source="eventDate"
-        label="Date de l'événement"
-        locales="fr-FR"
-        showTime
-        options={{
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        }}
-      />
+      <ReferenceField
+        source="timeSlotId"
+        reference="TimeSlot"
+        label="Créneau horaire"
+      >
+        <FunctionField
+          render={(record) => {
+            if (!record?.startTime || !record?.endTime) return "Non défini";
+            return formatTimeSlot(record.startTime, record.endTime);
+          }}
+        />
+      </ReferenceField>
 
       <ReferenceField source="paymentId" reference="Payment" label="Montant">
         <FunctionField
