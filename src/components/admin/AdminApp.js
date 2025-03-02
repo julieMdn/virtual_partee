@@ -8,6 +8,7 @@ import {
   Layout,
   AppBar,
 } from "react-admin";
+import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
 import frenchMessages from "ra-language-french";
 import englishMessages from "ra-language-english";
@@ -17,15 +18,50 @@ import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
-import UserCreate from "./categories/users/UserCreate";
+
+import ScoreList from "./categories/scores/ScoreList";
+import ScoreEdit from "./categories/scores/ScoreEdit";
+import ScoreCreate from "./categories/scores/ScoreCreate";
+import PaymentList from "./categories/payments/PaymentList";
+import PaymentEdit from "./categories/payments/PaymentEdit";
+import PaymentCreate from "./categories/payments/PaymentCreate";
 import OfferList from "./categories/offers/OfferList";
 import OfferEdit from "./categories/offers/OfferEdit";
 import OfferCreate from "./categories/offers/OfferCreate";
+import CourseList from "./categories/courses/CourseList";
+import CourseEdit from "./categories/courses/CourseEdit";
+import CourseCreate from "./categories/courses/CourseCreate";
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
 import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
+
+const adminDataProvider = dataProvider("/api", {
+  include: {
+    Booking: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+      offer: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      payment: {
+        select: {
+          id: true,
+          amount: true,
+          status: true,
+        },
+      },
+    },
+  },
+});
 
 const i18nProvider = polyglotI18nProvider((locale) => {
   if (locale === "fr") {
@@ -90,51 +126,47 @@ const MyAppBar = () => (
   </AppBar>
 );
 
-// Composant Admin avec dataProvider chargé dynamiquement côté client uniquement
-const AdminWithDataProvider = dynamic(
-  () =>
-    import("ra-data-simple-prisma").then(({ dataProvider }) => {
-      const AdminComponent = () => (
-        <Admin
-          dataProvider={dataProvider}
-          i18nProvider={i18nProvider}
-          authProvider={authProvider}
-          layout={(props) => <Layout {...props} appBar={MyAppBar} />}
-        >
-          <Resource
-            name="User"
-            list={UserList}
-            edit={UserEdit}
-            create={UserCreate}
-            recordRepresentation="username"
-          />
-          <Resource
-            name="Offer"
-            list={OfferList}
-            edit={OfferEdit}
-            create={OfferCreate}
-            recordRepresentation="offer_title"
-          />
-          <Resource
-            name="Booking"
-            list={BookingList}
-            edit={BookingEdit}
-            create={BookingCreate}
-          />
-          <Resource name="Score" />
-          <Resource name="Course" recordRepresentation="title" />
-        </Admin>
-      );
-      return AdminComponent;
-    }),
-  {
-    ssr: false,
-    loading: () => <div>Chargement de l'interface d'administration...</div>,
-  }
-);
-
 const AdminApp = () => {
-  return <AdminWithDataProvider />;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
+
+  return (
+    <Admin
+      dataProvider={adminDataProvider}
+      i18nProvider={i18nProvider}
+      authProvider={authProvider}
+      layout={(props) => <Layout {...props} appBar={MyAppBar} />}
+    >
+      <Resource
+        name="User"
+        list={UserList}
+        edit={UserEdit}
+        recordRepresentation="username"
+      />
+      <Resource
+        name="Offer"
+        list={OfferList}
+        edit={OfferEdit}
+        create={OfferCreate}
+        recordRepresentation="offer_title"
+      />
+      <Resource
+        name="Booking"
+        list={BookingList}
+        edit={BookingEdit}
+        create={BookingCreate}
+      />
+      <Resource name="Score" />
+      <Resource name="Course" recordRepresentation="title" />
+    </Admin>
+  );
 };
 
 export default AdminApp;
