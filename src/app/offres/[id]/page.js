@@ -4,8 +4,9 @@ import Link from "next/link";
 
 export default async function OfferDetail({ params }) {
   try {
-    // Utiliser directement params.id sans Promise.resolve
-    const offerId = Number(params.id);
+    // Attendre les paramètres avant de les utiliser
+    const id = await params.id;
+    const offerId = Number(id);
 
     if (isNaN(offerId)) {
       return (

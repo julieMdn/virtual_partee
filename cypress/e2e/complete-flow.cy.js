@@ -14,7 +14,7 @@ describe("Flux complet de l'application", () => {
     cy.visit("/register");
 
     // Vérifier que la page d'inscription est chargée
-    cy.contains("Inscription").should("be.visible");
+    cy.contains("Créer un compte").should("be.visible");
 
     // Simuler une inscription réussie en définissant le localStorage et les cookies
     cy.window().then((win) => {
@@ -35,8 +35,8 @@ describe("Flux complet de l'application", () => {
     cy.contains("Nos offres").should("exist");
 
     // 3. Ajouter une offre au panier
-    cy.visit("/offres/offer123");
-    cy.contains("Détails de l'offre").should("exist");
+    cy.visit("/offres/1");
+    cy.get("button, a").contains("Réserver").should("exist");
 
     // 4. Procéder au paiement
     cy.visit("/cart");
