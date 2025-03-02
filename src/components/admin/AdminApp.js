@@ -8,7 +8,6 @@ import {
   Layout,
   AppBar,
 } from "react-admin";
-import { dataProvider } from "ra-data-simple-prisma";
 import { LocalesMenuButton } from "react-admin";
 import frenchMessages from "ra-language-french";
 import englishMessages from "ra-language-english";
@@ -18,6 +17,7 @@ import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
+import UserCreate from "./categories/users/UserCreate";
 import OfferList from "./categories/offers/OfferList";
 import OfferEdit from "./categories/offers/OfferEdit";
 import OfferCreate from "./categories/offers/OfferCreate";
@@ -25,34 +25,7 @@ import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
 import { useState, useEffect } from "react";
-
-const adminDataProvider = dataProvider("/api", {
-  include: {
-    Booking: {
-      user: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-      offer: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-      payment: {
-        select: {
-          id: true,
-          amount: true,
-          status: true,
-        },
-      },
-      timeSlot: true,
-    },
-  },
-});
+import dynamic from "next/dynamic";
 
 const i18nProvider = polyglotI18nProvider((locale) => {
   if (locale === "fr") {
@@ -117,47 +90,51 @@ const MyAppBar = () => (
   </AppBar>
 );
 
-const AdminApp = () => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
+// Composant Admin avec dataProvider chargé dynamiquement côté client uniquement
+const AdminWithDataProvider = dynamic(
+  () =>
+    import("ra-data-simple-prisma").then(({ dataProvider }) => {
+      const AdminComponent = () => (
+        <Admin
+          dataProvider={dataProvider}
+          i18nProvider={i18nProvider}
+          authProvider={authProvider}
+          layout={(props) => <Layout {...props} appBar={MyAppBar} />}
+        >
+          <Resource
+            name="User"
+            list={UserList}
+            edit={UserEdit}
+            create={UserCreate}
+            recordRepresentation="username"
+          />
+          <Resource
+            name="Offer"
+            list={OfferList}
+            edit={OfferEdit}
+            create={OfferCreate}
+            recordRepresentation="offer_title"
+          />
+          <Resource
+            name="Booking"
+            list={BookingList}
+            edit={BookingEdit}
+            create={BookingCreate}
+          />
+          <Resource name="Score" />
+          <Resource name="Course" recordRepresentation="title" />
+        </Admin>
+      );
+      return AdminComponent;
+    }),
+  {
+    ssr: false,
+    loading: () => <div>Chargement de l'interface d'administration...</div>,
   }
+);
 
-  return (
-    <Admin
-      dataProvider={adminDataProvider}
-      i18nProvider={i18nProvider}
-      authProvider={authProvider}
-      layout={(props) => <Layout {...props} appBar={MyAppBar} />}
-    >
-      <Resource
-        name="User"
-        list={UserList}
-        edit={UserEdit}
-        recordRepresentation="username"
-      />
-      <Resource
-        name="Offer"
-        list={OfferList}
-        edit={OfferEdit}
-        create={OfferCreate}
-        recordRepresentation="offer_title"
-      />
-      <Resource
-        name="Booking"
-        list={BookingList}
-        edit={BookingEdit}
-        create={BookingCreate}
-      />
-      <Resource name="Score" />
-      <Resource name="Course" recordRepresentation="title" />
-    </Admin>
-  );
+const AdminApp = () => {
+  return <AdminWithDataProvider />;
 };
 
 export default AdminApp;
