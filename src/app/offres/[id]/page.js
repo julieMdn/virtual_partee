@@ -1,7 +1,6 @@
 import { getOfferById } from "@/lib/serverMethods/offers/getOfferById";
 import Image from "next/image";
 import Link from "next/link";
-import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function OfferDetail({ params }) {
   try {
@@ -73,15 +72,12 @@ export default async function OfferDetail({ params }) {
                   </p>
                 </div>
 
-                <div className="flex gap-4 w-full sm:w-auto">
-                  <AddToCartButton offer={offer} />
-                  <Link
-                    href={`/booking?offerId=${offer.id}`}
-                    className="w-full sm:w-auto bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-12 rounded-lg transition-colors text-center"
-                  >
-                    Réserver
-                  </Link>
-                </div>
+                <Link
+                  href={`/booking?offerId=${offer.id}`}
+                  className="w-full sm:w-auto bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-12 rounded-lg transition-colors text-center"
+                >
+                  Réserver
+                </Link>
               </div>
 
               <div className="mt-8 pt-6 border-t border-[#F5E1C0]">

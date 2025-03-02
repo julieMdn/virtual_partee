@@ -62,7 +62,6 @@ model TimeSlot {
 model Booking {
   id Int @id @default(autoincrement()) @map("booking_id")
   createdAt DateTime @default(now()) @map("created_at") 
-  eventDate DateTime @map("event_date") 
   status String @default("pending") @map("booking_status")
   stripeSessionId String? @map("stripe_session_id")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
