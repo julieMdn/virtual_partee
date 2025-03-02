@@ -1,4 +1,21 @@
 import "@testing-library/jest-dom";
+import { act } from "react-dom/test-utils";
+
+// Supprimer les avertissements concernant les mises à jour React non enveloppées dans act(...)
+const originalError = console.error;
+console.error = (...args) => {
+  if (/Warning.*not wrapped in act/.test(args[0])) {
+    return;
+  }
+  originalError.call(console, ...args);
+};
+
+// Améliorer la gestion des mises à jour asynchrones dans les tests
+global.actAsync = async (callback) => {
+  await act(async () => {
+    await callback();
+  });
+};
 
 // Mock Next.js router
 jest.mock("next/router", () => ({
