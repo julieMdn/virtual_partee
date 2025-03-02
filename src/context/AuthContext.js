@@ -9,6 +9,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -17,12 +18,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const checkAuth = () => {
-    const token = Cookies.get("token");
+    const tokenFromCookie = Cookies.get("token");
     const storedUser = localStorage.getItem("user");
 
-    if (token && storedUser) {
+    if (tokenFromCookie && storedUser) {
+      setToken(tokenFromCookie);
       setUser(JSON.parse(storedUser));
     } else {
+      setToken(null);
       setUser(null);
     }
     setLoading(false);
@@ -48,6 +51,7 @@ export function AuthProvider({ children }) {
           sameSite: "Lax",
         });
         localStorage.setItem("user", JSON.stringify(data.data.user));
+        setToken(data.data.token);
         setUser(data.data.user);
         router.push("/account");
         return { success: true };
@@ -65,12 +69,14 @@ export function AuthProvider({ children }) {
   const logout = () => {
     Cookies.remove("token");
     localStorage.removeItem("user");
+    setToken(null);
     setUser(null);
     router.push("/login");
   };
 
   const value = {
     user,
+    token,
     loading,
     login,
     logout,

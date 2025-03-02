@@ -85,7 +85,9 @@ describe("NavBar", () => {
 
     render(<NavBar />);
 
-    expect(screen.getByText("3")).toBeInTheDocument();
+    // Utiliser getAllByText au lieu de getByText car il y a maintenant deux éléments avec "3"
+    const cartCountElements = screen.getAllByText("3");
+    expect(cartCountElements.length).toBeGreaterThan(0);
   });
 
   it("ne devrait pas afficher le compteur si le panier est vide", () => {

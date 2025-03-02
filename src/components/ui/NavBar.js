@@ -5,11 +5,38 @@ import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { HiMenu, HiX } from "react-icons/hi";
 
 export default function NavBar() {
   const { cart } = useCart();
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Fonction pour vérifier si l'écran est en mode mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Vérifier au chargement
+    checkIfMobile();
+
+    // Ajouter un écouteur d'événement pour le redimensionnement
+    window.addEventListener("resize", checkIfMobile);
+
+    // Nettoyer l'écouteur d'événement
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
+
+  // Fermer le menu lorsqu'on clique sur un lien
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   // Ne pas afficher la navbar sur les pages admin
   if (pathname.startsWith("/admin")) {
@@ -26,13 +53,42 @@ export default function NavBar() {
             </Link>
             <Link
               href="/offres"
-              className="px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors"
+              className="hidden md:block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors"
             >
               Réserver
             </Link>
           </div>
 
-          <div className="flex items-center space-x-6">
+          {/* Icônes toujours visibles sur mobile */}
+          <div className="flex items-center space-x-4 md:hidden">
+            <Link
+              href="/cart"
+              className="relative text-[#002A5C] hover:text-[#FF8C42] transition-colors"
+              aria-label="Panier"
+            >
+              <FaShoppingCart className="text-xl" />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#FF8C42] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cart.length}
+                </span>
+              )}
+            </Link>
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
+              aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            >
+              {isMenuOpen ? (
+                <HiX className="text-2xl" />
+              ) : (
+                <HiMenu className="text-2xl" />
+              )}
+            </button>
+          </div>
+
+          {/* Menu pour desktop */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link
               href="#"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
@@ -101,6 +157,76 @@ export default function NavBar() {
             </Link>
           </div>
         </div>
+
+        {/* Menu mobile */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white py-4 px-2 shadow-inner">
+            <div className="flex flex-col space-y-4">
+              <Link
+                href="#"
+                className="text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
+                onClick={closeMenu}
+              >
+                Le concept
+              </Link>
+
+              <Link
+                href="/offres"
+                className="text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
+                onClick={closeMenu}
+              >
+                Nos offres
+              </Link>
+
+              <Link
+                href="/contact"
+                className="text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
+                onClick={closeMenu}
+              >
+                Contactez-nous
+              </Link>
+
+              <Link
+                href="/offres"
+                className="text-white bg-[#3C8D0D] hover:bg-[#327A0B] transition-colors py-2 px-4 rounded-md text-center"
+                onClick={closeMenu}
+              >
+                Réserver
+              </Link>
+
+              {user ? (
+                <>
+                  <Link
+                    href="/account"
+                    className="flex items-center space-x-2 text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    <FaUserCircle className="text-xl text-[#FF8C42]" />
+                    <span>Mon profil</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      closeMenu();
+                    }}
+                    className="flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors py-2 px-4 rounded-md hover:bg-gray-50 w-full text-left"
+                  >
+                    <span>Se déconnecter</span>
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center space-x-2 text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
+                  onClick={closeMenu}
+                >
+                  <FaUserCircle className="text-xl" />
+                  <span>Se connecter</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -3,6 +3,10 @@ export default {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@/app/(.*)$": "<rootDir>/src/app/$1",
+    "^@/components/(.*)$": "<rootDir>/src/components/$1",
+    "^@/context/(.*)$": "<rootDir>/src/context/$1",
+    "^@/lib/(.*)$": "<rootDir>/src/lib/$1",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     "^react-calendar/.*\\.css$": "identity-obj-proxy",
   },
@@ -17,4 +21,5 @@ export default {
     "!src/**/*.stories.{js,jsx,ts,tsx}",
     "!**/node_modules/**",
   ],
+  moduleDirectories: ["node_modules", "<rootDir>"],
 };

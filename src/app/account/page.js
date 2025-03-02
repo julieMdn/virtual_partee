@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 export default function Account() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, token } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
@@ -20,22 +21,61 @@ export default function Account() {
       if (activeTab === "reservations") {
         setLoadingBookings(true);
         try {
-          const response = await fetch("/api/user/bookings");
+          console.log(
+            "Récupération des réservations avec token:",
+            token ? "Présent" : "Absent"
+          );
+
+          // Vérifier si le token est disponible
+          if (!token) {
+            console.log("Aucun token disponible pour la requête");
+            toast.error("Vous devez être connecté pour voir vos réservations");
+            setLoadingBookings(false);
+            return;
+          }
+
+          const response = await fetch("/api/user/bookings", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          console.log("Statut de la réponse:", response.status);
+
           if (response.ok) {
             const data = await response.json();
+            console.log("Réservations récupérées:", data.length);
             setBookings(data);
           } else {
-            console.error("Erreur lors de la récupération des réservations");
+            const errorData = await response.json().catch(() => ({}));
+            console.error("Erreur API:", response.status, errorData);
+            toast.error(
+              `Erreur: ${
+                errorData.error || "Problème de récupération des réservations"
+              }`
+            );
+
+            // Si non autorisé, essayer de rafraîchir l'authentification
+            if (response.status === 401) {
+              console.log(
+                "Tentative de rafraîchissement de l'authentification"
+              );
+              checkAuth();
+            }
           }
         } catch (error) {
-          console.error("Erreur:", error);
+          console.error(
+            "Erreur lors de la récupération des réservations:",
+            error
+          );
+          toast.error(`Erreur: ${error.message || "Problème de connexion"}`);
         }
         setLoadingBookings(false);
       }
     };
 
     fetchBookings();
-  }, [activeTab]);
+  }, [activeTab, token]);
 
   if (loading) {
     return (
@@ -284,18 +324,22 @@ export default function Account() {
                                 <div>
                                   <p className="text-sm text-gray-600">
                                     <span className="font-medium">Date :</span>{" "}
-                                    {new Date(
-                                      booking.eventDate
-                                    ).toLocaleDateString("fr-FR")}
+                                    {booking.timeSlot
+                                      ? new Date(
+                                          booking.timeSlot.date
+                                        ).toLocaleDateString("fr-FR")
+                                      : "Non disponible"}
                                   </p>
                                   <p className="text-sm text-gray-600">
                                     <span className="font-medium">Heure :</span>{" "}
-                                    {new Date(
-                                      booking.eventDate
-                                    ).toLocaleTimeString("fr-FR", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
+                                    {booking.timeSlot
+                                      ? new Date(
+                                          booking.timeSlot.startTime
+                                        ).toLocaleTimeString("fr-FR", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })
+                                      : "Non disponible"}
                                   </p>
                                 </div>
 
