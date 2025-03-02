@@ -114,7 +114,6 @@ export async function POST(request) {
       // Créer la réservation
       const booking = await prisma.booking.create({
         data: {
-          eventDate: startDateTime, // Utiliser la date/heure de l'événement
           status: "pending",
           stripeSessionId: stripeSession.id,
           userId: decodedUserId,
@@ -125,6 +124,13 @@ export async function POST(request) {
 
       console.log("Réservation créée:", booking);
     }
+
+    // Vider le panier en renvoyant un cookie vide
+    const cookieOptions = {
+      path: "/",
+      maxAge: 0, // Expire immédiatement
+    };
+    await cookieStore.set("cart", "", cookieOptions);
 
     console.log(
       "Session Stripe créée avec succès et réservations enregistrées"
