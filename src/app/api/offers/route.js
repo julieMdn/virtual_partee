@@ -1,12 +1,11 @@
-import { getOfferById } from "@/lib/serverMethods/offers/getOfferById";
+import { getOffers } from "@/lib/serverMethods/offers/getOffers";
 import { NextResponse } from "next/server";
 
-export async function GET(request, { params }) {
-  const { id } = params;
-  const result = await getOfferById(id);
+export async function GET(request) {
+  const result = await getOffers();
 
   if (!result.success) {
-    return NextResponse.json(result, { status: 404 });
+    return NextResponse.json(result, { status: 500 });
   }
 
   return NextResponse.json(result);
