@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:integration": "jest --testMatch=\"**/__tests__/integration/**/*.test.[jt]s?(x)\"",
     "seed:opening-hours": "node prisma/seeds/openingHoursSeed.js",
     "seed:time-slots": "node prisma/seeds/timeSlotsSeed.js",
     "seed:users": "node prisma/seeds/usersSeed.js",
