@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import Footer from "../../../src/components/ui/Footer";
+import Footer from "../../../components/ui/Footer";
 
 // Mock du composant Link de Next.js
 jest.mock("next/link", () => {

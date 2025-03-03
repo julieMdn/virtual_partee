@@ -6,7 +6,7 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import BookingForm from "../../../src/components/ui/BookingForm";
+import BookingForm from "../../../components/ui/BookingForm";
 import { useCart } from "@/context/CartContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";

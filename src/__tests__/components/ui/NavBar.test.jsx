@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import NavBar from "../../../src/components/ui/NavBar";
+import NavBar from "../../../components/ui/NavBar";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { usePathname } from "next/navigation";
