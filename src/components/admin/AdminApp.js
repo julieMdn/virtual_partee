@@ -18,9 +18,19 @@ import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
+
+import ScoreList from "./categories/scores/ScoreList";
+import ScoreEdit from "./categories/scores/ScoreEdit";
+import ScoreCreate from "./categories/scores/ScoreCreate";
+import PaymentList from "./categories/payments/PaymentList";
+import PaymentEdit from "./categories/payments/PaymentEdit";
+import PaymentCreate from "./categories/payments/PaymentCreate";
 import OfferList from "./categories/offers/OfferList";
 import OfferEdit from "./categories/offers/OfferEdit";
 import OfferCreate from "./categories/offers/OfferCreate";
+import CourseList from "./categories/courses/CourseList";
+import CourseEdit from "./categories/courses/CourseEdit";
+import CourseCreate from "./categories/courses/CourseCreate";
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
@@ -49,7 +59,6 @@ const adminDataProvider = dataProvider("/api", {
           status: true,
         },
       },
-      timeSlot: true,
     },
   },
 });
