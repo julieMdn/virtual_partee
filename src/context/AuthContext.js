@@ -75,6 +75,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     checkAuth,
+    token: Cookies.get("token"),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 export default function Account() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, token } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
@@ -20,7 +20,11 @@ export default function Account() {
       if (activeTab === "reservations") {
         setLoadingBookings(true);
         try {
-          const response = await fetch("/api/user/bookings");
+          const response = await fetch("/api/user/bookings", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           if (response.ok) {
             const data = await response.json();
             setBookings(data);
@@ -35,7 +39,7 @@ export default function Account() {
     };
 
     fetchBookings();
-  }, [activeTab]);
+  }, [activeTab, token]);
 
   if (loading) {
     return (
