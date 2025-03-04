@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useCart } from "@/context/CartContext";
 import { toast } from "react-hot-toast";
 
