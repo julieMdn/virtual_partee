@@ -4,6 +4,7 @@ import {
   NumberInput,
   DateInput,
   ReferenceInput,
+  SelectInput,
 } from "react-admin";
 
 const ScoreEdit = () => (
@@ -11,16 +12,9 @@ const ScoreEdit = () => (
     <SimpleForm>
       <NumberInput source="value" label="Score" />
       <DateInput source="date" label="Date" />
-      <ReferenceInput
-        source="userId"
-        reference="User"
-        label="Utilisateur"
-      ></ReferenceInput>
-      <ReferenceInput
-        source="courseId"
-        reference="Course"
-        label="Cours"
-      ></ReferenceInput>
+      <ReferenceInput source="userId" reference="User" label="Utilisateur">
+        <SelectInput optionText="username" />
+      </ReferenceInput>
     </SimpleForm>
   </Edit>
 );

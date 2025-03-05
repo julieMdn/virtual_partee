@@ -18,7 +18,7 @@ import authProvider from "./authProvider";
 import LanguageIcon from "@mui/icons-material/Language";
 import UserList from "./categories/users/UserList";
 import UserEdit from "./categories/users/UserEdit";
-
+import UserCreate from "./categories/users/UserCreate";
 import ScoreList from "./categories/scores/ScoreList";
 import ScoreEdit from "./categories/scores/ScoreEdit";
 import ScoreCreate from "./categories/scores/ScoreCreate";
@@ -28,9 +28,6 @@ import PaymentCreate from "./categories/payments/PaymentCreate";
 import OfferList from "./categories/offers/OfferList";
 import OfferEdit from "./categories/offers/OfferEdit";
 import OfferCreate from "./categories/offers/OfferCreate";
-import CourseList from "./categories/courses/CourseList";
-import CourseEdit from "./categories/courses/CourseEdit";
-import CourseCreate from "./categories/courses/CourseCreate";
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
@@ -79,9 +76,9 @@ const i18nProvider = polyglotI18nProvider((locale) => {
         },
         Score: {
           name: "Score |||| Scores",
-        },
-        Course: {
-          name: "Parcours |||| Parcours",
+          fields: {
+            // ... existing code ...
+          },
         },
       },
     };
@@ -101,9 +98,6 @@ const i18nProvider = polyglotI18nProvider((locale) => {
         },
         Scores: {
           name: "Score |||| Scores",
-        },
-        Courses: {
-          name: "Course |||| Courses",
         },
       },
     };
@@ -148,6 +142,7 @@ const AdminApp = () => {
         name="User"
         list={UserList}
         edit={UserEdit}
+        create={UserCreate}
         recordRepresentation="username"
       />
       <Resource
@@ -163,8 +158,13 @@ const AdminApp = () => {
         edit={BookingEdit}
         create={BookingCreate}
       />
-      <Resource name="Score" />
-      <Resource name="Course" recordRepresentation="title" />
+      <Resource
+        name="Score"
+        list={ScoreList}
+        edit={ScoreEdit}
+        create={ScoreCreate}
+        recordRepresentation="value"
+      />
     </Admin>
   );
 };
