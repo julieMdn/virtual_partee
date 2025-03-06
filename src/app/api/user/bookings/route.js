@@ -38,7 +38,7 @@ export async function GET(request) {
         payment: true,
       },
       orderBy: {
-        eventDate: "desc",
+        createdAt: "desc",
       },
     });
 

@@ -23,13 +23,14 @@ export default function CartPage() {
       const token = Cookies.get("token") || localStorage.getItem("token");
 
       if (!token) {
-        toast.error("Vous devez être connecté pour effectuer une réservation", {
+        toast.error("Vous devez vous connecter pour valider votre panier", {
           duration: 4000,
           action: {
             label: "Se connecter",
             onClick: () => router.push("/login"),
           },
         });
+        setIsProcessing(false);
         return;
       }
 
@@ -47,20 +48,29 @@ export default function CartPage() {
 
       const data = await response.json();
       console.log("Réponse reçue:", data);
+      console.log("Statut de la réponse:", response.status);
+      console.log("Message d'erreur de la réponse:", data.error);
 
       if (response.status === 401) {
-        toast.error("Vous devez être connecté pour effectuer une réservation", {
+        toast.error("Vous devez vous connecter pour valider votre panier", {
           duration: 4000,
           action: {
             label: "Se connecter",
             onClick: () => router.push("/login"),
           },
         });
+        setIsProcessing(false);
         return;
       }
 
       if (!response.ok) {
-        throw new Error(data.error || "Une erreur est survenue");
+        console.log("Réponse non OK, statut:", response.status);
+        if (data && data.error) {
+          console.log("Message d'erreur détecté:", data.error);
+          throw new Error(data.error);
+        } else {
+          throw new Error("Une erreur est survenue");
+        }
       }
 
       if (data.url) {
@@ -71,10 +81,30 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error("Erreur lors de l'initialisation du paiement:", error);
-      toast.error(
-        error.message ||
+      console.error("Message d'erreur:", error.message);
+
+      // Vérifier si l'erreur est liée à l'authentification
+      if (
+        error.message &&
+        (error.message.includes("Vous devez vous connecter") ||
+          error.message.includes("Authentification requise") ||
+          error.message.includes("token") ||
+          error.message.includes("connecté") ||
+          error.message.includes("jwt") ||
+          error.message.includes("auth"))
+      ) {
+        toast.error("Vous devez vous connecter pour valider votre panier", {
+          duration: 4000,
+          action: {
+            label: "Se connecter",
+            onClick: () => router.push("/login"),
+          },
+        });
+      } else {
+        toast.error(
           "Une erreur est survenue lors de la préparation du paiement"
-      );
+        );
+      }
     } finally {
       setIsProcessing(false);
     }

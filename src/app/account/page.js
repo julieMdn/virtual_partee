@@ -20,12 +20,21 @@ export default function Account() {
       if (activeTab === "reservations") {
         setLoadingBookings(true);
         try {
-          const response = await fetch("/api/user/bookings");
+          const response = await fetch("/api/user/bookings", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
           if (response.ok) {
             const data = await response.json();
             setBookings(data);
           } else {
-            console.error("Erreur lors de la récupération des réservations");
+            const errorData = await response.json().catch(() => ({}));
+            console.error(
+              `Erreur lors de la récupération des réservations: ${response.status} ${response.statusText}`,
+              errorData
+            );
           }
         } catch (error) {
           console.error("Erreur:", error);

@@ -5,11 +5,18 @@ import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 export default function NavBar() {
   const { cart } = useCart();
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Effet pour marquer le composant comme monté côté client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Ne pas afficher la navbar sur les pages admin
   if (pathname.startsWith("/admin")) {
@@ -93,7 +100,7 @@ export default function NavBar() {
               aria-label="Panier"
             >
               <FaShoppingCart className="text-xl" />
-              {cart.length > 0 && (
+              {isMounted && cart.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#FF8C42] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cart.length}
                 </span>

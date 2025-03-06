@@ -31,7 +31,7 @@ export async function POST(request) {
 
     if (!token) {
       return NextResponse.json(
-        { error: "Authentification requise" },
+        { error: "Vous devez vous connecter pour valider votre panier" },
         { status: 401 }
       );
     }
@@ -139,6 +139,24 @@ export async function POST(request) {
   } catch (error) {
     console.error("Erreur détaillée lors de la création de la session:", error);
     console.error("Stack trace:", error.stack);
+
+    // Vérifier si l'erreur est liée à l'authentification
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError" ||
+      error.message.includes("jwt") ||
+      error.message.includes("token") ||
+      error.message.includes("auth")
+    ) {
+      return NextResponse.json(
+        {
+          error: "Vous devez vous connecter pour valider votre panier",
+          details: error.message,
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Erreur lors de la création de la session de paiement",

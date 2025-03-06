@@ -55,6 +55,20 @@ export async function POST(request) {
         console.log("✅ Paiement créé:", payment.id);
 
         // Mettre à jour les réservations
+        const bookings = await prisma.booking.findMany({
+          where: {
+            stripeSessionId: session.id,
+          },
+        });
+
+        console.log(`📋 Réservations trouvées: ${bookings.length}`);
+
+        if (bookings.length === 0) {
+          console.warn(
+            `⚠️ Aucune réservation trouvée pour la session ${session.id}`
+          );
+        }
+
         const updateResult = await prisma.booking.updateMany({
           where: {
             stripeSessionId: session.id,
