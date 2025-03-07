@@ -19,7 +19,7 @@ export default async function Home() {
       src: "/images/carousel/golf1.jpg",
       alt: "Simulation de golf",
       caption: "Une expérience de golf immersive",
-      description: "Découvrez nos simulateurs de golf de dernière génération",
+      description: "Découvrez notre simulateurs de golf de dernière génération",
     },
     {
       src: "/images/carousel/golf2.jpg",

@@ -21,7 +21,7 @@ export default async function Offers() {
           {offers.map((offer) => (
             <div
               key={offer.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 flex flex-col h-full border border-[#F5E1C0]"
+              className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform flex flex-col h-full border border-[#F5E1C0]"
             >
               <div className="relative h-48 w-full">
                 <Image

@@ -77,7 +77,7 @@ export default function NavBar() {
           {/* Menu pour desktop */}
           <div className="hidden md:flex items-center space-x-6">
             <Link
-              href="#"
+              href="/concept"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Le concept
@@ -183,7 +183,7 @@ export default function NavBar() {
       >
         <div className="flex flex-col space-y-6">
           <Link
-            href="#"
+            href="/concept"
             className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
             onClick={toggleMenu}
           >
