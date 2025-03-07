@@ -1,6 +1,6 @@
 # Virtual Partee
 
-Ce projet est une application Next.js qui permet de gérer des réservations d'expériences virtuelles.
+Ce projet est une application Next.js qui permet de gérer des réservations d'expériences virtuelles sur simulateur de golf.
 
 ## Table des matières
 
