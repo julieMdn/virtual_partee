@@ -32,7 +32,7 @@ export default function NavBar() {
               Virtual Partee
             </Link>
             <Link
-              href="/offres"
+              href="/offers"
               className="px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors"
             >
               Réserver
@@ -48,7 +48,7 @@ export default function NavBar() {
             </Link>
 
             <Link
-              href="/offres"
+              href="/offers"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Nos offres

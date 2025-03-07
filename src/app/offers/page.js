@@ -2,7 +2,7 @@ import { getOffers } from "@/lib/serverMethods/offers/getOffers";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Offres() {
+export default async function Offers() {
   const { success, data: offers, error } = await getOffers();
 
   if (!success) {
@@ -52,7 +52,7 @@ export default async function Offres() {
                   </div>
 
                   <Link
-                    href={`/offres/${offer.id}`}
+                    href={`/offers/${offer.id}`}
                     className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
                   >
                     Voir les détails
