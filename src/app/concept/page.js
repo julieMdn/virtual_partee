@@ -15,7 +15,7 @@ export default function Concept() {
           <div className="md:flex">
             <div className="md:w-1/2 relative h-64 md:h-auto">
               <Image
-                src="/images/concept/golf_simulator.jpg"
+                src="https://res.cloudinary.com/dvngzrunp/image/upload/v1741426306/milkshake_bkmb2p.jpg"
                 alt="Simulateur de golf Virtual Partee"
                 fill
                 className="object-cover"
@@ -140,7 +140,7 @@ export default function Concept() {
           <div className="md:flex flex-row-reverse">
             <div className="md:w-1/2 relative h-64 md:h-auto">
               <Image
-                src="/images/concept/milkshake.jpg"
+                src="https://res.cloudinary.com/dvngzrunp/image/upload/v1741426306/milkshake_bkmb2p.jpg"
                 alt="Délicieuses pâtisseries et snacks"
                 fill
                 className="object-cover"

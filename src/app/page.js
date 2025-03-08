@@ -16,25 +16,25 @@ export default async function Home() {
 
   const carouselImages = [
     {
-      src: "/images/carousel/golf1.jpg",
+      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/golf1_xzyew1.jpg",
       alt: "Simulation de golf",
       caption: "Une expérience de golf immersive",
       description: "Découvrez notre simulateurs de golf de dernière génération",
     },
     {
-      src: "/images/carousel/golf2.jpg",
+      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/golf2_qjvsb2.jpg",
       alt: "Terrain de golf virtuel",
       caption: "Des parcours du monde entier",
       description: "Jouez sur les plus beaux parcours et golfez comme un pro",
     },
     {
-      src: "/images/carousel/snack1.jpg",
+      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/snack1_xlzwxm.jpg",
       alt: "Service de snacking",
       caption: "Restauration sur place",
       description: "Profitez de nos services de snacking pendant votre partie",
     },
     {
-      src: "/images/carousel/snack2.jpg",
+      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/snack2_vpln4o.jpg",
       alt: "Boissons et rafraîchissements",
       caption: "Boissons et rafraîchissements",
       description: "Un large choix de boissons pour vous désaltérer",
