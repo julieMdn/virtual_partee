@@ -15,7 +15,7 @@ export default function Concept() {
           <div className="md:flex">
             <div className="md:w-1/2 relative h-64 md:h-auto">
               <Image
-                src="https://res.cloudinary.com/dvngzrunp/image/upload/v1741426306/milkshake_bkmb2p.jpg"
+                src="https://res.cloudinary.com/dvngzrunp/image/upload/v1741426305/golf_simulator_n4ypjy.jpg"
                 alt="Simulateur de golf Virtual Partee"
                 fill
                 className="object-cover"

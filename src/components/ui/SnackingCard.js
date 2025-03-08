@@ -8,7 +8,7 @@ const SnackingCard = () => {
       <div className="md:flex">
         <div className="md:w-1/2 relative h-64 md:h-auto">
           <Image
-            src="/images/concept/milkshake.jpg"
+            src="https://res.cloudinary.com/dvngzrunp/image/upload/v1741426306/milkshake_bkmb2p.jpg"
             alt="Service de snacking et boissons"
             fill
             className="object-cover"
