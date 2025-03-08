@@ -11,18 +11,14 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request) {
   try {
-    console.log("🔵 Webhook Stripe reçu");
     const body = await request.text();
     const headersList = headers();
     const sig = headersList.get("stripe-signature");
-
-    console.log("Signature Stripe reçue:", sig ? "Oui" : "Non");
 
     let event;
 
     try {
       event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
-      console.log("✅ Événement webhook validé:", event.type);
     } catch (err) {
       console.error("❌ Erreur de signature webhook:", err.message);
       return NextResponse.json(
@@ -34,11 +30,9 @@ export async function POST(request) {
     // Gérer l'événement
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      console.log("💳 Session de paiement complétée:", session.id);
 
       try {
         // Créer d'abord le paiement
-        console.log("💰 Création du paiement...");
         const amountTTC = session.amount_total / 100; // Convertir en euros
         const tvaRate = 0.2; // TVA à 20%
         const amountHT = amountTTC / (1 + tvaRate);
@@ -52,7 +46,6 @@ export async function POST(request) {
             status: "completed",
           },
         });
-        console.log("✅ Paiement créé:", payment.id);
 
         // Mettre à jour les réservations
         const bookings = await prisma.booking.findMany({
@@ -60,8 +53,6 @@ export async function POST(request) {
             stripeSessionId: session.id,
           },
         });
-
-        console.log(`📋 Réservations trouvées: ${bookings.length}`);
 
         if (bookings.length === 0) {
           console.warn(
@@ -89,7 +80,6 @@ export async function POST(request) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error("❌ Erreur webhook:", error);
-    console.error("Stack trace:", error.stack);
     return NextResponse.json(
       { error: "Erreur interne du webhook" },
       { status: 500 }

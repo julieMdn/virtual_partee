@@ -2,8 +2,6 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -69,13 +67,14 @@ export async function POST(request) {
 
       case "payment_intent.payment_failed":
         const paymentIntent = event.data.object;
-        console.log("Échec du paiement:", paymentIntent.id);
+        console.error("Échec du paiement:", paymentIntent.id);
         // Pas besoin de traitement particulier car les réservations
         // ne sont créées qu'après le paiement réussi
         break;
 
       default:
-        console.log(`Event non géré: ${event.type}`);
+        // Pas besoin de log pour les événements non gérés
+        break;
     }
 
     return NextResponse.json({ received: true });

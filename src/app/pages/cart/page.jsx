@@ -13,6 +13,9 @@ export default function CartPage() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Effet pour marquer le composant comme monté côté client
   useEffect(() => {
@@ -22,9 +25,15 @@ export default function CartPage() {
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
   const handlePayment = async () => {
+    if (!user) {
+      router.push("/pages/login");
+      return;
+    }
+
     setIsProcessing(true);
+    setError("");
+
     try {
-      console.log("Début du processus de paiement");
       // Récupérer le token soit des cookies soit du localStorage
       const token = Cookies.get("token") || localStorage.getItem("token");
 
@@ -40,7 +49,6 @@ export default function CartPage() {
         return;
       }
 
-      console.log("Envoi de la requête avec les articles:", cart);
       const response = await fetch("/api/payment", {
         method: "POST",
         headers: {
@@ -53,9 +61,6 @@ export default function CartPage() {
       });
 
       const data = await response.json();
-      console.log("Réponse reçue:", data);
-      console.log("Statut de la réponse:", response.status);
-      console.log("Message d'erreur de la réponse:", data.error);
 
       if (response.status === 401) {
         toast.error("Vous devez vous connecter pour valider votre panier", {
@@ -70,9 +75,7 @@ export default function CartPage() {
       }
 
       if (!response.ok) {
-        console.log("Réponse non OK, statut:", response.status);
         if (data && data.error) {
-          console.log("Message d'erreur détecté:", data.error);
           throw new Error(data.error);
         } else {
           throw new Error("Une erreur est survenue");
@@ -113,6 +116,52 @@ export default function CartPage() {
       }
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      router.push("/pages/login");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // ... existing code ...
+
+      const response = await fetch("/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cartItems: cart }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          setError(
+            "Une erreur est survenue lors de la redirection vers la page de paiement."
+          );
+          setIsLoading(false);
+        }
+      } else {
+        setError(
+          data.error ||
+            "Une erreur est survenue lors de la création du paiement."
+        );
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setError(
+        "Une erreur est survenue lors de la communication avec le serveur."
+      );
+      setIsLoading(false);
     }
   };
 

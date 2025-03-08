@@ -17,10 +17,7 @@ export async function GET(request) {
     });
 
     if (!offer) {
-      return NextResponse.json({
-        success: false,
-        error: "Offre non trouvée",
-      });
+      return NextResponse.json({ error: "Offre non trouvée" }, { status: 404 });
     }
 
     const durationInHours = offer.duration / 60; // Convertir les minutes en heures
@@ -140,15 +137,7 @@ export async function GET(request) {
       }
     }
 
-    console.log("Received request for offerId:", offerId);
-    console.log("Offer found:", offer);
-    console.log("Duration in hours:", durationInHours);
-    console.log("Generated slots:", availableSlots);
-
-    return NextResponse.json({
-      success: true,
-      data: availableSlots,
-    });
+    return NextResponse.json(availableSlots);
   } catch (error) {
     console.error("Erreur lors de la récupération des créneaux:", error);
     return NextResponse.json({
