@@ -36,8 +36,12 @@ describe("NavBar", () => {
 
   it("ne devrait pas s'afficher sur les pages admin", () => {
     usePathname.mockReturnValue("/admin");
-    const { container } = render(<NavBar />);
-    expect(container.firstChild).toBeNull();
+    render(<NavBar />);
+    expect(screen.queryByText("Virtual Partee")).not.toBeInTheDocument();
+
+    usePathname.mockReturnValue("/pages/admin");
+    render(<NavBar />);
+    expect(screen.queryByText("Virtual Partee")).not.toBeInTheDocument();
   });
 
   it("devrait afficher le logo et les liens de navigation", () => {

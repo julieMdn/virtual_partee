@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import AccountPage from "@/app/account/page";
+import AccountPage from "@/app/pages/account/page";
 
 // Mock des hooks
 jest.mock("next/navigation", () => ({

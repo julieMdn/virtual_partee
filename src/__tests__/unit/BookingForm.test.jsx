@@ -187,7 +187,7 @@ describe("BookingForm", () => {
     );
   });
 
-  it("devrait ajouter au panier et rediriger vers /cart quand un créneau est sélectionné", async () => {
+  it("devrait ajouter au panier et rediriger vers /pages/cart quand un créneau est sélectionné", async () => {
     // Ce test est plus complexe car nous ne pouvons pas facilement simuler la sélection d'un créneau
     // Nous allons donc simuler directement l'appel à handleAddToCart avec un créneau sélectionné
 
@@ -212,11 +212,11 @@ describe("BookingForm", () => {
           endTime: "15:00",
         },
       });
-      mockRouter.push("/cart");
+      mockRouter.push("/pages/cart");
     });
 
     expect(mockCart.addToCart).toHaveBeenCalled();
-    expect(mockRouter.push).toHaveBeenCalledWith("/cart");
+    expect(mockRouter.push).toHaveBeenCalledWith("/pages/cart");
   });
 
   it("devrait filtrer les créneaux horaires passés", async () => {

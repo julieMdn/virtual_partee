@@ -71,8 +71,8 @@ export async function POST(request) {
         quantity: 1,
       })),
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pages/payment/success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pages/payment/cancel`,
       metadata: {
         cartItems: JSON.stringify(
           cartItems.map((item) => ({

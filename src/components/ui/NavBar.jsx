@@ -50,7 +50,7 @@ export default function NavBar() {
   }, [isMenuOpen, isMounted]);
 
   // Ne pas afficher la navbar sur les pages admin
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/pages/admin")) {
     return null;
   }
 
@@ -67,7 +67,7 @@ export default function NavBar() {
               Virtual Partee
             </Link>
             <Link
-              href="/offers"
+              href="/pages/offers"
               className="hidden sm:block px-4 py-2 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors ml-2 md:ml-4"
             >
               Réserver
@@ -77,21 +77,21 @@ export default function NavBar() {
           {/* Menu pour desktop */}
           <div className="hidden md:flex items-center space-x-6">
             <Link
-              href="/concept"
+              href="/pages/concept"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Le concept
             </Link>
 
             <Link
-              href="/offers"
+              href="/pages/offers"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Nos offres
             </Link>
 
             <Link
-              href="/contact"
+              href="/pages/contact"
               className="text-[#002A5C] hover:text-[#FF8C42] transition-colors"
             >
               Contactez-nous
@@ -107,7 +107,7 @@ export default function NavBar() {
                 </div>
                 <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                   <Link
-                    href="/account"
+                    href="/pages/account"
                     className="block px-4 py-2 text-[#002A5C] hover:text-[#FF8C42] hover:bg-gray-50"
                   >
                     Mon profil
@@ -122,7 +122,7 @@ export default function NavBar() {
               </div>
             ) : (
               <Link
-                href="/login"
+                href="/pages/login"
                 className="flex items-center space-x-2 text-[#002A5C] hover:text-[#FF8C42] transition-colors"
               >
                 <FaUserCircle className="text-2xl" />
@@ -131,7 +131,7 @@ export default function NavBar() {
             )}
 
             <Link
-              href="/cart"
+              href="/pages/cart"
               className="relative text-[#002A5C] hover:text-[#FF8C42] transition-colors"
               aria-label="Panier"
             >
@@ -147,7 +147,7 @@ export default function NavBar() {
           {/* Icônes pour mobile */}
           <div className="flex md:hidden items-center space-x-4">
             <Link
-              href="/cart"
+              href="/pages/cart"
               className="relative text-[#002A5C] hover:text-[#FF8C42] transition-colors"
               aria-label="Panier"
             >
@@ -183,7 +183,7 @@ export default function NavBar() {
       >
         <div className="flex flex-col space-y-6">
           <Link
-            href="/concept"
+            href="/pages/concept"
             className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
             onClick={toggleMenu}
           >
@@ -191,7 +191,7 @@ export default function NavBar() {
           </Link>
 
           <Link
-            href="/offers"
+            href="/pages/offers"
             className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
             onClick={toggleMenu}
           >
@@ -199,17 +199,17 @@ export default function NavBar() {
           </Link>
 
           <Link
-            href="/contact"
+            href="/pages/contact"
             className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
             onClick={toggleMenu}
           >
-            Contactez-nous
+            Contact
           </Link>
 
           {user ? (
             <>
               <Link
-                href="/account"
+                href="/pages/account"
                 className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
                 onClick={toggleMenu}
               >
@@ -227,7 +227,7 @@ export default function NavBar() {
             </>
           ) : (
             <Link
-              href="/login"
+              href="/pages/login"
               className="text-xl text-[#002A5C] hover:text-[#FF8C42] transition-colors py-2 border-b border-gray-100"
               onClick={toggleMenu}
             >
@@ -236,7 +236,7 @@ export default function NavBar() {
           )}
 
           <Link
-            href="/offers"
+            href="/pages/offers"
             className="mt-4 w-full px-4 py-3 text-white bg-[#3C8D0D] rounded-md hover:bg-[#327A0B] transition-colors text-center"
             onClick={toggleMenu}
           >

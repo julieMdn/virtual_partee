@@ -109,7 +109,7 @@ describe("Authentification", () => {
 
   it("devrait afficher les réservations de l'utilisateur", () => {
     // Visiter la page du compte
-    cy.visit("/account");
+    cy.visit("/pages/account");
 
     // Attendre que la page soit chargée
     cy.get("h1").contains("Mon compte").should("be.visible");

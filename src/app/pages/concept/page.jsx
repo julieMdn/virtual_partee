@@ -179,7 +179,7 @@ export default function Concept() {
             l'heure et la durée de votre session.
           </p>
           <Link
-            href="/offers"
+            href="/pages/offers"
             className="inline-block px-8 py-4 bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold rounded-lg transition-colors text-lg"
           >
             Découvrir nos offres

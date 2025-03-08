@@ -14,7 +14,7 @@ export default async function OfferDetail({ params }) {
           <div className="text-center text-red-500">ID d'offre invalide</div>
           <div className="text-center mt-4">
             <Link
-              href="/offers"
+              href="/pages/offers"
               className="text-[#3C8D0D] hover:text-[#327A0B] underline"
             >
               Retourner aux offres
@@ -32,7 +32,7 @@ export default async function OfferDetail({ params }) {
           <div className="text-center text-red-500">Erreur : {error}</div>
           <div className="text-center mt-4">
             <Link
-              href="/offers"
+              href="/pages/offers"
               className="text-[#3C8D0D] hover:text-[#327A0B] underline"
             >
               Retourner aux offres
@@ -74,7 +74,7 @@ export default async function OfferDetail({ params }) {
                 </div>
 
                 <Link
-                  href={`/booking?offerId=${offer.id}`}
+                  href={`/pages/booking?offerId=${offer.id}`}
                   className="w-full sm:w-auto bg-[#002A5C] hover:bg-[#001F45] text-white font-semibold py-3 px-12 rounded-lg transition-colors text-center"
                 >
                   Réserver
@@ -83,10 +83,10 @@ export default async function OfferDetail({ params }) {
 
               <div className="mt-8 pt-6 border-t border-[#F5E1C0]">
                 <Link
-                  href="/offers"
-                  className="text-[#3C8D0D] hover:text-[#327A0B] underline"
+                  href="/pages/offers"
+                  className="text-[#002A5C] hover:text-[#3C8D0D] transition-colors"
                 >
-                  ← Retour aux offres
+                  Retour aux offres
                 </Link>
               </div>
             </div>
@@ -102,7 +102,7 @@ export default async function OfferDetail({ params }) {
         </div>
         <div className="text-center mt-4">
           <Link
-            href="/offers"
+            href="/pages/offers"
             className="text-[#3C8D0D] hover:text-[#327A0B] underline"
           >
             Retourner aux offres

@@ -52,10 +52,10 @@ export default async function Offers() {
                   </div>
 
                   <Link
-                    href={`/offers/${offer.id}`}
+                    href={`/pages/offers/${offer.id}`}
                     className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
                   >
-                    Voir les détails
+                    En savoir plus
                   </Link>
                 </div>
               </div>

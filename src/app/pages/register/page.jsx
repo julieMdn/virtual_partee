@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export default function Register() {
   const router = useRouter();
@@ -83,12 +84,14 @@ export default function Register() {
       const data = await response.json();
 
       if (data.success) {
-        // Stockage des informations utilisateur
-        localStorage.setItem("user", JSON.stringify(data.data.user));
-        // Redirection vers la page du compte
-        router.push("/account");
+        login(formData.email, formData.password);
+        toast.success("Inscription réussie !");
+        router.push("/pages/account");
       } else {
-        setError(data.message || "Erreur lors de l'inscription");
+        setError(data.error || "Une erreur est survenue lors de l'inscription");
+        toast.error(
+          data.error || "Une erreur est survenue lors de l'inscription"
+        );
       }
     } catch (error) {
       setError("Erreur lors de l'inscription");
@@ -358,7 +361,7 @@ export default function Register() {
             <div className="mt-6 pt-6 border-t border-[#F5E1C0] text-center">
               <p className="text-[#002A5C]">Déjà un compte ?</p>
               <Link
-                href="/login"
+                href="/pages/login"
                 className="text-[#3C8D0D] hover:text-[#327A0B] font-semibold"
               >
                 Se connecter

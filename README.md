@@ -123,7 +123,7 @@ yarn cypress:run
 
 ## Accès à l'interface d'administration
 
-L'interface d'administration est accessible à l'adresse : [http://localhost:3000/admin](http://localhost:3000/admin)
+L'interface d'administration est accessible à l'adresse : [http://localhost:3000/pages/admin](http://localhost:3000/pages/admin)
 
 Pour pouvoir vous connecter à l'interface d'administration, vous devez au préalable :
 

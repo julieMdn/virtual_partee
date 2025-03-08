@@ -15,7 +15,7 @@ describe("Processus de paiement", () => {
 
   it("devrait afficher le contenu du panier", () => {
     // Visiter d'abord la page du panier
-    cy.visit("/cart");
+    cy.visit("/pages/cart");
 
     // Attendre que la page soit chargée
     cy.contains("Votre panier est vide").should("be.visible");
@@ -51,7 +51,7 @@ describe("Processus de paiement", () => {
 
   it("devrait permettre de supprimer un article du panier", () => {
     // Visiter d'abord la page du panier
-    cy.visit("/cart");
+    cy.visit("/pages/cart");
 
     // Attendre que la page soit chargée
     cy.contains("Votre panier est vide").should("be.visible");
@@ -102,7 +102,7 @@ describe("Processus de paiement", () => {
     }).as("paymentRequest");
 
     // Visiter d'abord la page du panier
-    cy.visit("/cart");
+    cy.visit("/pages/cart");
 
     // Attendre que la page soit chargée
     cy.contains("Votre panier est vide").should("be.visible");
@@ -150,7 +150,7 @@ describe("Processus de paiement", () => {
     cy.clearLocalStorage("cart");
 
     // Visiter la page du panier
-    cy.visit("/cart");
+    cy.visit("/pages/cart");
 
     // Vérifier que le message de panier vide est affiché
     cy.contains("Votre panier est vide").should("be.visible");

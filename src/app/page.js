@@ -93,10 +93,10 @@ export default async function Home() {
                   </div>
 
                   <Link
-                    href={`/offers/${offer.id}`}
-                    className="block w-full bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+                    href={`/pages/offers/${offer.id}`}
+                    className="mt-4 inline-block px-6 py-2 bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold rounded-lg transition-colors"
                   >
-                    En savoir plus
+                    Réserver
                   </Link>
                 </div>
               </div>

@@ -116,7 +116,7 @@ export default function Login() {
             <div className="mt-6 pt-6 border-t border-[#F5E1C0] text-center">
               <p className="text-[#002A5C]">Pas encore de compte ?</p>
               <Link
-                href="/register"
+                href="/pages/register"
                 className="text-[#3C8D0D] hover:text-[#327A0B] font-semibold"
               >
                 Créer un compte

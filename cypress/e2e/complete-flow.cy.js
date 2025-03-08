@@ -11,7 +11,7 @@ describe("Flux complet de l'application", () => {
 
   it("devrait permettre à un utilisateur de s'inscrire, se connecter, réserver et payer", () => {
     // 1. Inscription de l'utilisateur
-    cy.visit("/register");
+    cy.visit("/pages/register");
 
     // Vérifier que la page d'inscription est chargée
     cy.contains("Créer un compte").should("be.visible");
@@ -38,12 +38,12 @@ describe("Flux complet de l'application", () => {
     cy.visit("/offres/1");
     cy.get("button, a").contains("Réserver").should("exist");
 
-    // 4. Procéder au paiement
-    cy.visit("/cart");
+    // 4. Vérifier le panier
+    cy.visit("/pages/cart");
     cy.contains("Panier").should("exist");
 
     // 5. Voir les réservations
-    cy.visit("/account");
+    cy.visit("/pages/account");
     cy.contains("Mon compte").should("exist");
 
     // 6. Se déconnecter

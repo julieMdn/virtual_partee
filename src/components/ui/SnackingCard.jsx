@@ -35,7 +35,7 @@ const SnackingCard = () => {
           </p>
           <div className="mt-6">
             <Link
-              href="/contact"
+              href="/pages/contact"
               className="inline-block bg-[#3C8D0D] hover:bg-[#327A0B] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               En savoir plus

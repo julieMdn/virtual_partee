@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { toast } from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -49,7 +50,8 @@ export function AuthProvider({ children }) {
         });
         localStorage.setItem("user", JSON.stringify(data.data.user));
         setUser(data.data.user);
-        router.push("/account");
+        toast.success("Connexion réussie !");
+        router.push("/pages/account");
         return { success: true };
       } else {
         return { success: false, error: data.message };

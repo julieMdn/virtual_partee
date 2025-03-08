@@ -91,7 +91,7 @@ const BookingForm = () => {
       timeSlot: selectedTimeSlot,
     });
 
-    router.push("/cart");
+    router.push("/pages/cart");
   };
 
   // Fonction pour désactiver les dimanches
