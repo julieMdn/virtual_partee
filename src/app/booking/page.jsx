@@ -1,4 +1,5 @@
 import BookingForm from "@/components/ui/BookingForm";
+import { Suspense } from "react";
 
 export default function BookingPage() {
   return (
@@ -7,7 +8,11 @@ export default function BookingPage() {
         <h1 className="text-center text-4xl font-bold mb-12 text-[#002A5C]">
           Réservation
         </h1>
-        <BookingForm />
+        <Suspense
+          fallback={<div className="text-center py-8">Chargement...</div>}
+        >
+          <BookingForm />
+        </Suspense>
       </div>
     </div>
   );

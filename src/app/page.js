@@ -19,7 +19,7 @@ export default async function Home() {
       src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/golf1_xzyew1.jpg",
       alt: "Simulation de golf",
       caption: "Une expérience de golf immersive",
-      description: "Découvrez notre simulateurs de golf de dernière génération",
+      description: "Découvrez notre simulateur de golf de dernière génération",
     },
     {
       src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/golf2_qjvsb2.jpg",
