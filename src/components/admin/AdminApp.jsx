@@ -78,9 +78,6 @@ const i18nProvider = polyglotI18nProvider((locale) => {
         Score: {
           name: "Score |||| Scores",
         },
-        Course: {
-          name: "Parcours |||| Parcours",
-        },
       },
     };
   }
@@ -99,9 +96,6 @@ const i18nProvider = polyglotI18nProvider((locale) => {
         },
         Scores: {
           name: "Score |||| Scores",
-        },
-        Courses: {
-          name: "Course |||| Courses",
         },
       },
     };
