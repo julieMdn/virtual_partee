@@ -82,18 +82,20 @@ export async function GET(request) {
       const slotEnd = new Date(slotStart);
       slotEnd.setHours(h + durationInHours);
 
-      // Vérifier si le créneau complet est disponible
-      const isReserved = await prisma.timeSlot.findFirst({
-        where: {
-          date: {
-            gte: slotStart,
-            lt: slotEnd,
-          },
-          isAvailable: false,
-        },
+      // Vérifier si le créneau est déjà réservé
+      const isSlotReserved = unavailableSlots.some((slot) => {
+        const slotStartTime = new Date(slot.startTime);
+        const slotEndTime = new Date(slot.endTime);
+
+        // Vérifier si le créneau actuel chevauche un créneau réservé
+        return (
+          (slotStart >= slotStartTime && slotStart < slotEndTime) || // Le début du créneau est dans un créneau réservé
+          (slotEnd > slotStartTime && slotEnd <= slotEndTime) || // La fin du créneau est dans un créneau réservé
+          (slotStart <= slotStartTime && slotEnd >= slotEndTime) // Le créneau englobe un créneau réservé
+        );
       });
 
-      if (!isReserved) {
+      if (!isSlotReserved) {
         availableSlots.push({
           startTime: slotStart.toISOString(),
           endTime: slotEnd.toISOString(),
@@ -117,18 +119,20 @@ export async function GET(request) {
       const slotEnd = new Date(slotStart);
       slotEnd.setHours(h + durationInHours);
 
-      // Vérifier si le créneau complet est disponible
-      const isReserved = await prisma.timeSlot.findFirst({
-        where: {
-          date: {
-            gte: slotStart,
-            lt: slotEnd,
-          },
-          isAvailable: false,
-        },
+      // Vérifier si le créneau est déjà réservé
+      const isSlotReserved = unavailableSlots.some((slot) => {
+        const slotStartTime = new Date(slot.startTime);
+        const slotEndTime = new Date(slot.endTime);
+
+        // Vérifier si le créneau actuel chevauche un créneau réservé
+        return (
+          (slotStart >= slotStartTime && slotStart < slotEndTime) || // Le début du créneau est dans un créneau réservé
+          (slotEnd > slotStartTime && slotEnd <= slotEndTime) || // La fin du créneau est dans un créneau réservé
+          (slotStart <= slotStartTime && slotEnd >= slotEndTime) // Le créneau englobe un créneau réservé
+        );
       });
 
-      if (!isReserved) {
+      if (!isSlotReserved) {
         availableSlots.push({
           startTime: slotStart.toISOString(),
           endTime: slotEnd.toISOString(),

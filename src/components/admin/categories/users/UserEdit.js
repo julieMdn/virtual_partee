@@ -73,9 +73,6 @@ const UserEdit = (props) => (
       <ArrayInput source="scores">
         <SimpleFormIterator>
           <NumberInput source="value" label="Score" />
-          <ReferenceInput source="courseId" reference="Course">
-            <AutocompleteInput optionText="title" label="Parcours" />
-          </ReferenceInput>
         </SimpleFormIterator>
       </ArrayInput>
     </SimpleForm>

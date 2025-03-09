@@ -8,14 +8,12 @@ import {
 
 const ScoreList = () => (
   <List>
-    <Datagrid>
-      <TextField source="value" label="Score" />
-      <DateField source="date" label="Date" locales="fr-FR" showTime={false} />
+    <Datagrid rowClick="edit">
+      <TextField source="id" />
+      <TextField source="value" />
+      <DateField source="date" />
       <ReferenceField source="userId" reference="User" label="Utilisateur">
         <TextField source="username" />
-      </ReferenceField>
-      <ReferenceField source="courseId" reference="Course" label="Cours">
-        <TextField source="title" />
       </ReferenceField>
     </Datagrid>
   </List>

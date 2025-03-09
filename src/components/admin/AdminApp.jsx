@@ -28,9 +28,7 @@ import PaymentCreate from "./categories/payments/PaymentCreate";
 import OfferList from "./categories/offers/OfferList";
 import OfferEdit from "./categories/offers/OfferEdit";
 import OfferCreate from "./categories/offers/OfferCreate";
-import CourseList from "./categories/courses/CourseList";
-import CourseEdit from "./categories/courses/CourseEdit";
-import CourseCreate from "./categories/courses/CourseCreate";
+
 import BookingList from "./categories/bookings/BookingList";
 import BookingEdit from "./categories/bookings/BookingEdit";
 import BookingCreate from "./categories/bookings/BookingCreate";
@@ -164,7 +162,6 @@ const AdminApp = () => {
         create={BookingCreate}
       />
       <Resource name="Score" />
-      <Resource name="Course" recordRepresentation="title" />
     </Admin>
   );
 };

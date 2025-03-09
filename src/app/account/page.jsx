@@ -20,12 +20,21 @@ export default function Account() {
       if (activeTab === "reservations") {
         setLoadingBookings(true);
         try {
-          const response = await fetch("/api/user/bookings");
+          const response = await fetch("/api/user/bookings", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
           if (response.ok) {
             const data = await response.json();
             setBookings(data);
           } else {
-            console.error("Erreur lors de la récupération des réservations");
+            const errorData = await response.json().catch(() => ({}));
+            console.error(
+              `Erreur lors de la récupération des réservations: ${response.status} ${response.statusText}`,
+              errorData
+            );
           }
         } catch (error) {
           console.error("Erreur:", error);
@@ -284,18 +293,24 @@ export default function Account() {
                                 <div>
                                   <p className="text-sm text-gray-600">
                                     <span className="font-medium">Date :</span>{" "}
-                                    {new Date(
-                                      booking.eventDate
-                                    ).toLocaleDateString("fr-FR")}
+                                    {booking.timeSlot &&
+                                    booking.timeSlot.startTime
+                                      ? new Date(
+                                          booking.timeSlot.startTime
+                                        ).toLocaleDateString("fr-FR")
+                                      : "Date non disponible"}
                                   </p>
                                   <p className="text-sm text-gray-600">
                                     <span className="font-medium">Heure :</span>{" "}
-                                    {new Date(
-                                      booking.eventDate
-                                    ).toLocaleTimeString("fr-FR", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
+                                    {booking.timeSlot &&
+                                    booking.timeSlot.startTime
+                                      ? new Date(
+                                          booking.timeSlot.startTime
+                                        ).toLocaleTimeString("fr-FR", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })
+                                      : "Heure non disponible"}
                                   </p>
                                 </div>
 
