@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,102 +8,97 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement()) @map("user_id")
-  username String @unique @map("user_name")
-  email String @unique @map("user_email")
-  password String @map("user_password")
-  firstName String @map("user_firstname")
-  lastName String @map("user_lastname")
-  createdAt DateTime @default(now()) @map("user_created_at")
-  role String @default("user") @map("user_role")
-  birthday DateTime @map("user_birthday")
-  addresses Address[]
-  scores Score[]
-  bookings Booking[]
+  id        Int       @id @default(autoincrement()) @map("user_id")
+  username  String    @unique @map("user_name")
+  email     String    @unique @map("user_email")
+  password  String    @map("user_password")
+  firstName String    @map("user_firstname")
+  lastName  String    @map("user_lastname")
+  createdAt DateTime  @default(now()) @map("user_created_at")
+  role      String    @default("user") @map("user_role")
+  birthday  DateTime  @map("user_birthday")
+  bookings  Booking[]
+  scores    Score[]
+  addresses Address[] @relation("AddressToUser")
 }
 
 model Address {
-  id Int @id @default(autoincrement()) @map("address_id")
-  street String @map("address_street")
-  city String @map("address_city")
-  postCode String @map("address_post_code")
-  country String @map("address_country")
+  id          Int    @id @default(autoincrement()) @map("address_id")
+  street      String @map("address_street")
+  city        String @map("address_city")
+  postCode    String @map("address_post_code")
+  country     String @map("address_country")
   phoneNumber String @map("phone_number")
-  type String @default("billing") @map("address_type")
-  users User[]
+  type        String @default("billing") @map("address_type")
+  users       User[] @relation("AddressToUser")
 }
 
 model Offer {
-  id Int @id @default(autoincrement()) @map("offer_id")
-  title String @map("offer_title")
-  description String @db.MediumText @map("offer_description")
-  price Float @map("offer_price")
-  picture String @map("offer_picture")
-  createdAt DateTime @default(now()) @map("offer_created_at")
-  bookings Booking[]
+  id          Int       @id @default(autoincrement()) @map("offer_id")
+  title       String    @map("offer_title")
+  description String    @map("offer_description") @db.MediumText
+  price       Float     @map("offer_price")
+  picture     String    @map("offer_picture")
+  createdAt   DateTime  @default(now()) @map("offer_created_at")
+  duration    Int       @default(60)
+  bookings    Booking[]
 }
 
 model TimeSlot {
-  id          Int      @id @default(autoincrement()) @map("time_slot_id")
-  startTime   DateTime @db.Time @map("start_time")
-  endTime     DateTime @db.Time @map("end_time")
-  isAvailable Boolean  @default(true) @map("is_available")
-  booking     Booking?
+  date        DateTime
+  endTime     DateTime
+  id          Int      @id @default(autoincrement())
+  isAvailable Boolean  @default(false)
+  startTime   DateTime
+  bookings    Booking?
 }
 
 model Booking {
-  id Int @id @default(autoincrement()) @map("booking_id")
-  date DateTime @default(now()) @map("booking_date")
-  status String @default("pending") @map("booking_status")
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int @map("user_id")
+  id              Int      @id @default(autoincrement()) @map("booking_id")
+  status          String   @default("pending") @map("booking_status")
+  offerId         Int      @map("offer_id")
+  timeSlotId      Int      @unique @map("time_slot_id")
+  paymentId       Int?     @map("payment_id")
+  userId          Int      @map("user_id")
+  stripeSessionId String?  @map("stripe_session_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  offer           Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  payment         Payment? @relation(fields: [paymentId], references: [id])
+  timeSlot        TimeSlot @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
-  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
-  offerId Int @map("offer_id")
   @@index([offerId])
-  timeSlot TimeSlot @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
-  timeSlotId Int @unique @map("time_slot_id")
   @@index([timeSlotId])
-  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
-  paymentId Int? @map("payment_id")
   @@index([paymentId])
 }
 
 model Payment {
-  id Int @id @default(autoincrement()) @map("payment_id")
-  date DateTime @default(now()) @map("payment_date")
-  amount Float @map("payment_amount")
-  tvaAmount Float @map("tva_amount")
-  status String @default("pending") @map("payment_status")
-  bookings Booking[]
+  id        Int       @id @default(autoincrement()) @map("payment_id")
+  date      DateTime  @default(now()) @map("payment_date")
+  amount    Float     @map("payment_amount")
+  tvaAmount Float     @map("tva_amount")
+  status    String    @default("pending") @map("payment_status")
+  bookings  Booking[]
+
   @@index([id])
 }
 
 model Score {
-  id Int @id @default(autoincrement()) @map("score_id")
-  value Int @map("score_value")
-  date DateTime @default(now()) @map("score_date")
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int @map("user_id")
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId Int @map("course_id")
-  @@index([userId])
-  @@index([courseId])
-}
+  id     Int      @id @default(autoincrement()) @map("score_id")
+  value  Int      @map("score_value")
+  date   DateTime @default(now()) @map("score_date")
+  userId Int      @map("user_id")
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model Course {
-  id Int @id @default(autoincrement()) @map("course_id")
-  title String @map("course_title")
-  scores Score[]
+  @@index([userId])
 }
 
 model OpeningHours {
-  id Int @id @default(autoincrement()) @map("opening_hours_id")
-  dayOfWeek String @map("day_of_week")
-  morningStart DateTime @db.Time @map("morning_start")
-  morningEnd DateTime @db.Time @map("morning_end")
-  afternoonStart DateTime @db.Time @map("afternoon_start")
-  afternoonEnd DateTime @db.Time @map("afternoon_end")
+  afternoonEnd   DateTime
+  afternoonStart DateTime
+  dayOfWeek      String
+  id             Int      @id @default(autoincrement())
+  morningEnd     DateTime
+  morningStart   DateTime
 }
-
-

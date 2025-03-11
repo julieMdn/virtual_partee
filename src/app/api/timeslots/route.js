@@ -7,11 +7,39 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const date = new Date(searchParams.get("date"));
-    const dayOfWeek = date
-      .toLocaleDateString("fr-FR", { weekday: "long" })
-      .toLowerCase();
+    const offerId = searchParams.get("offerId");
+    const now = new Date();
 
-    // Vérifier les horaires d'ouverture
+    // Récupérer l'offre pour connaître sa durée
+    const offer = await prisma.offer.findUnique({
+      where: { id: parseInt(offerId) },
+      select: { duration: true },
+    });
+
+    if (!offer) {
+      return NextResponse.json({
+        success: false,
+        error: "Offre non trouvée",
+      });
+    }
+
+    const durationInHours = offer.duration / 60; // Convertir les minutes en heures
+
+    // Convertir le jour en anglais pour correspondre à la base de données
+    const days = {
+      dimanche: "sunday",
+      lundi: "monday",
+      mardi: "tuesday",
+      mercredi: "wednesday",
+      jeudi: "thursday",
+      vendredi: "friday",
+      samedi: "saturday",
+    };
+
+    const dayOfWeek =
+      days[date.toLocaleDateString("fr-FR", { weekday: "long" }).toLowerCase()];
+
+    // 1. Récupérer les horaires d'ouverture pour ce jour
     const openingHours = await prisma.openingHours.findFirst({
       where: { dayOfWeek },
     });
@@ -19,57 +47,103 @@ export async function GET(request) {
     if (!openingHours) {
       return NextResponse.json({
         success: false,
-        error: "Nous sommes fermés ce jour-là",
+        error: "Ce jour n'est pas ouvert",
       });
     }
 
-    // Récupérer tous les créneaux
-    const timeSlots = await prisma.timeSlot.findMany({
-      where: {
-        isAvailable: true,
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-    });
-
-    // Récupérer les réservations existantes pour cette date
-    const existingBookings = await prisma.booking.findMany({
+    // 2. Récupérer les créneaux non disponibles pour cette date
+    const unavailableSlots = await prisma.timeSlot.findMany({
       where: {
         date: {
-          gte: new Date(date.setHours(0, 0, 0, 0)),
-          lt: new Date(date.setHours(23, 59, 59, 999)),
+          gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+          lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
         },
+        isAvailable: false,
       },
     });
 
-    // Générer les créneaux disponibles
-    const slots = [];
+    // 3. Générer tous les créneaux disponibles
+    const availableSlots = [];
+    const isToday = date.toDateString() === now.toDateString();
 
-    // Créneaux du matin (9h-12h)
-    for (let hour = 9; hour < 12; hour++) {
-      slots.push({
-        id: hour,
-        startTime: `${hour.toString().padStart(2, "0")}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
+    // Créneaux du matin
+    for (
+      let h = openingHours.morningStart.getHours();
+      h < openingHours.morningEnd.getHours() - durationInHours + 1;
+      h++
+    ) {
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
+
+      if (isToday && slotStart <= now) {
+        continue;
+      }
+
+      const slotEnd = new Date(slotStart);
+      slotEnd.setHours(h + durationInHours);
+
+      // Vérifier si le créneau est déjà réservé
+      const isSlotReserved = unavailableSlots.some((slot) => {
+        const slotStartTime = new Date(slot.startTime);
+        const slotEndTime = new Date(slot.endTime);
+
+        // Vérifier si le créneau actuel chevauche un créneau réservé
+        return (
+          (slotStart >= slotStartTime && slotStart < slotEndTime) || // Le début du créneau est dans un créneau réservé
+          (slotEnd > slotStartTime && slotEnd <= slotEndTime) || // La fin du créneau est dans un créneau réservé
+          (slotStart <= slotStartTime && slotEnd >= slotEndTime) // Le créneau englobe un créneau réservé
+        );
       });
+
+      if (!isSlotReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: slotEnd.toISOString(),
+        });
+      }
     }
 
-    // Créneaux de l'après-midi (14h-20h)
-    for (let hour = 14; hour < 20; hour++) {
-      slots.push({
-        id: hour,
-        startTime: `${hour.toString().padStart(2, "0")}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
+    // Créneaux de l'après-midi
+    for (
+      let h = openingHours.afternoonStart.getHours();
+      h < openingHours.afternoonEnd.getHours() - durationInHours + 1;
+      h++
+    ) {
+      const slotStart = new Date(date);
+      slotStart.setHours(h, 0, 0, 0);
+
+      if (isToday && slotStart <= now) {
+        continue;
+      }
+
+      const slotEnd = new Date(slotStart);
+      slotEnd.setHours(h + durationInHours);
+
+      // Vérifier si le créneau est déjà réservé
+      const isSlotReserved = unavailableSlots.some((slot) => {
+        const slotStartTime = new Date(slot.startTime);
+        const slotEndTime = new Date(slot.endTime);
+
+        // Vérifier si le créneau actuel chevauche un créneau réservé
+        return (
+          (slotStart >= slotStartTime && slotStart < slotEndTime) || // Le début du créneau est dans un créneau réservé
+          (slotEnd > slotStartTime && slotEnd <= slotEndTime) || // La fin du créneau est dans un créneau réservé
+          (slotStart <= slotStartTime && slotEnd >= slotEndTime) // Le créneau englobe un créneau réservé
+        );
       });
+
+      if (!isSlotReserved) {
+        availableSlots.push({
+          startTime: slotStart.toISOString(),
+          endTime: slotEnd.toISOString(),
+        });
+      }
     }
 
-    // Filtrer les créneaux déjà réservés
-    const availableSlots = slots.filter((slot) => {
-      return !existingBookings.some(
-        (booking) => booking.timeSlotId === slot.id
-      );
-    });
+    console.log("Received request for offerId:", offerId);
+    console.log("Offer found:", offer);
+    console.log("Duration in hours:", durationInHours);
+    console.log("Generated slots:", availableSlots);
 
     return NextResponse.json({
       success: true,

@@ -4,6 +4,11 @@ import {
   TextInput,
   DateInput,
   FormDataConsumer,
+  ArrayInput,
+  SimpleFormIterator,
+  NumberInput,
+  ReferenceInput,
+  AutocompleteInput,
 } from "react-admin";
 
 const UserEdit = (props) => (
@@ -60,6 +65,16 @@ const UserEdit = (props) => (
           );
         }}
       </FormDataConsumer>
+
+      {/* Section Scores */}
+      <h3 className="mt-8 mb-4 text-gray-600 border-b border-gray-300 pb-2">
+        Scores
+      </h3>
+      <ArrayInput source="scores">
+        <SimpleFormIterator>
+          <NumberInput source="value" label="Score" />
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
