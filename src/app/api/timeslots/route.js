@@ -23,7 +23,7 @@ export async function GET(request) {
       });
     }
 
-    const durationInHours = offer.duration / 60; // Convertir les minutes en heures
+    const durationInHours = offer.duration / 60;
 
     // Convertir le jour en anglais pour correspondre à la base de données
     const days = {
