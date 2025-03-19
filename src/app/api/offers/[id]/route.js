@@ -2,7 +2,7 @@ import { getOfferById } from "@/lib/serverMethods/offers/getOfferById";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
-  const { id } = await params;
+  const { id } = params;
   const result = await getOfferById(id);
 
   if (!result.success) {

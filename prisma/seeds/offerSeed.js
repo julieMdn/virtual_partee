@@ -19,6 +19,7 @@ async function seedOffers() {
         picture:
           "https://res.cloudinary.com/dvngzrunp/image/upload/v1738930676/initiation-collective-golf.jpg_ulkwyv.webp",
         createdAt: new Date("2025-02-24T10:30:41.200Z"),
+        duration: 120,
       },
       {
         title: "Entraînement et parcours sur simulateur Trackman en autonomie",
@@ -28,6 +29,17 @@ async function seedOffers() {
         picture:
           "https://res.cloudinary.com/dvngzrunp/image/upload/v1738932527/entrainement-parcours-golf-sur-simulateur.jpg_ozmid5.webp",
         createdAt: new Date("2025-02-24T10:33:22.346Z"),
+        duration: 60,
+      },
+      {
+        title: "Performance Pro Golf - Analyse et Optimisation",
+        description:
+          "Session personnalisée pour les golfeurs professionnels souhaitant optimiser leurs performances. Inclut une analyse complète du swing avec la technologie Trackman 4, analyse biomécanique détaillée, et recommandations d'amélioration ciblées. La séance comprend :\n\n- Analyse approfondie du swing en 3D\n- Mesures précises de la vitesse de la tête de club, du spin et de la trajectoire\n- Évaluation de la régularité et de la répétabilité\n- Conseils personnalisés pour l'optimisation de la performance\n- Rapport détaillé post-session\n\nIdéal pour les professionnels cherchant à affiner leur technique et améliorer leurs résultats en compétition.",
+        price: 50,
+        picture:
+          "https://res.cloudinary.com/dvngzrunp/image/upload/v1738932527/pro-golf-performance.jpg",
+        createdAt: new Date(),
+        duration: 120,
       },
     ];
 
