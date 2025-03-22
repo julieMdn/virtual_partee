@@ -6,6 +6,7 @@
 /**
  * 1. INTERFACES UTILISATEUR
  * -------------------------
+ * Composants qui gèrent l'affichage et l'interaction avec l'utilisateur
  */
 
 // Extrait du composant NavBar.jsx - Interface de navigation
@@ -81,9 +82,47 @@ const Carousel = ({ images }) => {
   );
 };
 
+// Extrait du composant BookingForm - Formulaire de réservation
+const BookingForm = ({ offerId, offerTitle, offerPrice }) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+
+  // Fonction pour vérifier si une date doit être désactivée
+  const tileDisabled = ({ date, view }) => {
+    // Désactiver les dimanches
+    if (view === "month" && date.getDay() === 0) {
+      return true;
+    }
+
+    // Désactiver les dates passées
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
+  // Logique de soumission du formulaire...
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <Calendar
+          onChange={setSelectedDate}
+          value={selectedDate}
+          minDate={new Date()}
+          className="w-full"
+          tileDisabled={tileDisabled}
+        />
+      </div>
+      {/* Reste du formulaire... */}
+    </div>
+  );
+};
+
 /**
  * 2. COMPOSANTS MÉTIER
  * --------------------
+ * Composants qui implémentent la logique fonctionnelle de l'application
  */
 
 // Extrait de la page d'accueil - Logique métier et affichage
@@ -133,48 +172,20 @@ export default async function Home() {
   );
 }
 
-// Extrait du composant BookingForm - Logique de réservation
-const BookingForm = ({ offerId, offerTitle, offerPrice }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+/**
+ * 3. INTERACTIONS AVEC LA BASE DE DONNÉES
+ * ---------------------------------------
+ * Fonctions qui communiquent directement avec la base de données via Prisma
+ */
 
-  // Fonction pour vérifier si une date doit être désactivée
-  const tileDisabled = ({ date, view }) => {
-    // Désactiver les dimanches
-    if (view === "month" && date.getDay() === 0) {
-      return true;
-    }
-
-    // Désactiver les dates passées
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
-  };
-
-  // Logique de soumission du formulaire...
-
-  return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <Calendar
-          onChange={setSelectedDate}
-          value={selectedDate}
-          minDate={new Date()}
-          className="w-full"
-          tileDisabled={tileDisabled}
-        />
-      </div>
-      {/* Reste du formulaire... */}
-    </div>
-  );
-};
-
-// Extrait de getOffers.js - Accès aux données des offres
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
+// Récupération des offres
+/**
+ * INTERACTION BDD : RÉCUPÉRATION DES OFFRES
+ * Sélection et tri des données d'offres avec Prisma
+ */
 export async function getOffers() {
   try {
     const offers = await prisma.offer.findMany({
@@ -209,7 +220,11 @@ export async function getOffers() {
   }
 }
 
-// Extrait de route.js dans api/bookings - API de réservation
+// Récupération des réservations
+/**
+ * INTERACTION BDD : RÉCUPÉRATION DES RÉSERVATIONS
+ * Requête avec filtrage par utilisateur et inclusion des relations
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -241,7 +256,198 @@ export async function GET(request) {
   }
 }
 
-// Extrait du contexte d'authentification - Gestion de l'état utilisateur
+// Création de réservation
+/**
+ * INTERACTION BDD : CRÉATION DE RÉSERVATION
+ * Validation des données, vérification de disponibilité et création d'entités liées
+ */
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { offerId, date, timeSlotId } = body;
+
+    // Validation : Vérifier si le créneau est déjà réservé
+    const existingUnavailableSlot = await prisma.timeSlot.findFirst({
+      where: {
+        date: new Date(date),
+        startTime: new Date(timeSlotId),
+        isAvailable: false,
+      },
+    });
+
+    if (existingUnavailableSlot) {
+      return NextResponse.json({
+        success: false,
+        error: "Ce créneau n'est plus disponible",
+      });
+    }
+
+    // Opération 1 : Créer un créneau horaire non disponible
+    const timeSlot = await prisma.timeSlot.create({
+      data: {
+        date: new Date(date),
+        startTime: new Date(timeSlotId),
+        endTime: new Date(
+          new Date(timeSlotId).setHours(new Date(timeSlotId).getHours() + 1)
+        ),
+        isAvailable: false,
+      },
+    });
+
+    // Opération 2 : Créer la réservation associée
+    const booking = await prisma.booking.create({
+      data: {
+        date: new Date(date),
+        status: "confirmed",
+        userId: 1,
+        offerId: parseInt(offerId),
+        timeSlotId: timeSlot.id,
+      },
+    });
+
+    return NextResponse.json({ success: true, data: booking });
+  } catch (error) {
+    console.error("Erreur:", error);
+    return NextResponse.json({
+      success: false,
+      error: "Erreur lors de la création de la réservation",
+    });
+  }
+}
+
+// Transaction de paiement
+/**
+ * INTERACTION BDD : TRANSACTION DE PAIEMENT
+ * Opérations atomiques avec $transaction pour garantir la cohérence des données
+ */
+export async function processPayment(
+  userId,
+  sessionId,
+  cartItems,
+  amountHT,
+  tvaAmount
+) {
+  try {
+    // Utilisation de $transaction pour garantir l'atomicité
+    const [payment, bookings] = await prisma.$transaction(async (tx) => {
+      // 1. Créer un nouveau paiement
+      const payment = await tx.payment.create({
+        data: {
+          amount: amountHT,
+          tvaAmount: tvaAmount,
+          status: "completed",
+        },
+      });
+
+      // 2. Créer les réservations associées
+      const bookings = await Promise.all(
+        cartItems.map(async (item) => {
+          // Créer un nouveau créneau horaire
+          const timeSlot = await tx.timeSlot.create({
+            data: {
+              date: new Date(item.date),
+              startTime: startDateTime,
+              endTime: endDateTime,
+              isAvailable: false,
+            },
+          });
+
+          // Créer la réservation liée au paiement et au créneau
+          return await tx.booking.create({
+            data: {
+              status: "confirmed",
+              stripeSessionId: sessionId,
+              userId: userId,
+              offerId: item.id,
+              timeSlotId: timeSlot.id,
+              paymentId: payment.id,
+            },
+          });
+        })
+      );
+
+      return [payment, bookings];
+    });
+
+    console.log("Transaction réussie:", { payment, bookings });
+    return { success: true, payment, bookings };
+  } catch (error) {
+    console.error("Erreur de transaction:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Inscription utilisateur
+/**
+ * INTERACTION BDD : INSCRIPTION UTILISATEUR
+ * Validation des données, normalisation, vérification d'unicité et hachage sécurisé
+ */
+export async function registerUser(userData) {
+  try {
+    const { email, password, firstName, lastName, username, birthday } =
+      userData;
+
+    // 1. Validation des champs requis
+    if (!email || !password || !firstName || !lastName || !username) {
+      return {
+        success: false,
+        message: "Tous les champs obligatoires doivent être remplis",
+        status: 400,
+      };
+    }
+
+    // 2. Normalisation des données
+    const normalizedEmail = email.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
+
+    // 3. Vérification d'unicité
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: normalizedEmail }, { username: normalizedUsername }],
+      },
+    });
+
+    if (existingUser) {
+      return {
+        success: false,
+        message: "Cet email ou nom d'utilisateur existe déjà",
+        status: 400,
+      };
+    }
+
+    // 4. Traitement sécurisé des données sensibles
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5. Insertion en base de données avec transaction
+    const user = await prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        username: normalizedUsername,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        birthday: new Date(birthday),
+        role: "user",
+      },
+    });
+
+    return { success: true, data: user };
+  } catch (error) {
+    console.error("Erreur d'inscription:", error);
+    return { success: false, error: error.message, status: 500 };
+  } finally {
+    // 6. Fermeture propre de la connexion
+    await prisma.$disconnect();
+  }
+}
+
+/**
+ * 4. AUTRES COMPOSANTS
+ * --------------------
+ * Contrôleurs API, middlewares d'authentification, utilitaires, etc.
+ */
+
+// Middleware d'authentification - Gestion de l'état utilisateur
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -290,3 +496,70 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// Contrôleur API pour l'inscription
+export async function POST(request) {
+  const userData = await request.json();
+  const result = await registerUser(userData);
+
+  return NextResponse.json(
+    result.success
+      ? { success: true, data: result.data }
+      : { success: false, error: result.message || result.error },
+    { status: result.status || (result.success ? 200 : 500) }
+  );
+}
+
+// Contrôleur API pour le paiement
+export async function POST(request) {
+  try {
+    // Vérification de l'authentification
+    const headersList = await headers();
+    const authHeader = headersList.get("Authorization");
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get("token")?.value;
+
+    // Essayer d'obtenir le token soit des cookies, soit du header Authorization
+    const token = cookieToken || (authHeader ? authHeader.split(" ")[1] : null);
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Vous devez vous connecter pour valider votre panier" },
+        { status: 401 }
+      );
+    }
+
+    // Décoder le token pour obtenir l'ID de l'utilisateur
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.userId;
+
+    // Récupérer les données du panier
+    const { cartItems } = await request.json();
+
+    // Créer la session Stripe
+    const stripeSession = await stripe.checkout.sessions.create({
+      // Configuration de la session Stripe...
+    });
+
+    // Traiter le paiement avec notre fonction métier
+    const result = await processPayment(
+      userId,
+      stripeSession.id,
+      cartItems,
+      amountHT,
+      tvaAmount
+    );
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    return NextResponse.json({ url: stripeSession.url });
+  } catch (error) {
+    console.error("Erreur de paiement:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la création de la session de paiement" },
+      { status: 500 }
+    );
+  }
+}
