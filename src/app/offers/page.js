@@ -40,8 +40,10 @@ export default async function Offers() {
                   </h2>
                 </div>
 
-                <div className="flex-grow">
-                  <p className="text-[#002A5C]/80">{offer.description}</p>
+                <div className="flex-grow line-clamp-3">
+                  <p className="text-[#002A5C]/80 line-clamp-3">
+                    {offer.description}
+                  </p>
                 </div>
 
                 <div className="flex-none mt-6">
