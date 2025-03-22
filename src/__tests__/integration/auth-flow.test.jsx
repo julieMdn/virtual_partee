@@ -131,10 +131,14 @@ describe("Flux d'authentification (intégration)", () => {
     const reservationsTab = screen.getByText("Mes réservations");
     fireEvent.click(reservationsTab);
 
-    // Vérifier que la requête fetch a été appelée avec le bon token
+    // Vérifier que la requête fetch a été appelée avec le bon token et les headers
     await waitFor(
       () => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/user/bookings");
+        expect(global.fetch).toHaveBeenCalledWith("/api/user/bookings", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       },
       { timeout: 3000 }
     );
@@ -177,10 +181,14 @@ describe("Flux d'authentification (intégration)", () => {
     const reservationsTab = screen.getByText("Mes réservations");
     fireEvent.click(reservationsTab);
 
-    // Vérifier que la requête fetch a été appelée avec le bon token
+    // Vérifier que la requête fetch a été appelée avec le bon token et les headers
     await waitFor(
       () => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/user/bookings");
+        expect(global.fetch).toHaveBeenCalledWith("/api/user/bookings", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       },
       { timeout: 3000 }
     );
