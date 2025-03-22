@@ -28,7 +28,7 @@ export default async function Home() {
       description: "Jouez sur les plus beaux parcours et golfez comme un pro",
     },
     {
-      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741426289/snack1_xlzwxm.jpg",
+      src: "https://res.cloudinary.com/dvngzrunp/image/upload/v1741712127/mae-mu-I7A_pHLcQK8-unsplash_nhlmjj.jpg",
       alt: "Service de snacking",
       caption: "Restauration sur place",
       description: "Profitez de nos services de snacking pendant votre partie",
